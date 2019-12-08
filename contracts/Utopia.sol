@@ -33,10 +33,10 @@ contract Utopia{
         return onwers;
     }
 
-    /*
+    
     function getLands(address onwer) view public returns (Land[]) {
         return lands[onwer];
-    }*/
+    }
 
     function getLand(address onwer, uint256 index) 
     view public returns (
