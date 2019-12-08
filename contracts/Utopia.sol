@@ -70,4 +70,12 @@ contract Utopia{
             ""
         ));
     }
+
+    function updateLand(string hash, uint256 index) returns (bool){
+        if(lands[msg.sender].length <= index){
+            return false;
+        }
+        lands[msg.sender][index].hash = hash;
+        return true;
+    }
 }

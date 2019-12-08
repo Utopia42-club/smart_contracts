@@ -24,5 +24,17 @@ contract('Utopia', accounts => {
         console.log("lands", lands);
         //assert.equal(owners, [admin1], 'owners mismatch');
     });
+
+    it('update lands', async () => {
+        const game = await createGame();
+
+        await game.assignLand(1,2,3,4, {from: admin1});
+        await game.updateLand('1234', 0, {from: admin1});
+
+        const lands = await game.getLand(admin1, 0);
+
+        console.log("lands", lands[5]);
+        assert.equal(lands[5], '1234', 'owners mismatch');
+    });
 });
 
