@@ -11,55 +11,70 @@ contract Utopia{
     using SafeMath for uint256;
 
     struct Land{
-        uint256 x1;
-        uint256 x2;
-        uint256 y1;
-        uint256 y2;
+        int256 x1;
+        int256 x2;
+        int256 y1;
+        int256 y2;
         uint256 time;
         string hash;
     }
 
     // admins
+    mapping(address => bool) public adminsMap;
     address[] public admins;
 
-    address[] public onwers;
-    mapping(address => Land[]) lands;
+    address[] public owners;
+    mapping(address => Land[]) public lands;
+
+    bool public allowPublicAssign = true;
 
     constructor(){
         admins[admins.length++] = msg.sender;
+        adminsMap[msg.sender] = true;
+    }
+
+    modifier isPublic(){
+        require(allowPublicAssign);
+        _;
+    }
+
+    modifier isAdmin(){
+        require(adminsMap[msg.sender]);
+        _;
     }
 
     function getOwners() view public returns (address[]) {
-        return onwers;
+        return owners;
     }
 
     
-    function getLands(address onwer) view public returns (Land[]) {
-        return lands[onwer];
+    function getLands(address owner) view public returns (Land[]) {
+        return lands[owner];
     }
 
-    function getLand(address onwer, uint256 index) 
+    function getLand(address owner, uint256 index) 
     view public returns (
-        uint256 x1,
-        uint256 y1,
-        uint256 x2,
-        uint256 y2,
+        int256 x1,
+        int256 y1,
+        int256 x2,
+        int256 y2,
         uint256 time, string hash) {
-        if(lands[onwer].length <= index){
+        if(lands[owner].length <= index){
             return;
         }
-        x1 = lands[onwer][index].x1;
-        x2 = lands[onwer][index].x2;
-        y1 = lands[onwer][index].y1;
-        y2 = lands[onwer][index].y2;
-        time = lands[onwer][index].time;
-        hash = lands[onwer][index].hash;
+        x1 = lands[owner][index].x1;
+        x2 = lands[owner][index].x2;
+        y1 = lands[owner][index].y1;
+        y2 = lands[owner][index].y2;
+        time = lands[owner][index].time;
+        hash = lands[owner][index].hash;
     }
 
-    function assignLand(uint256 x1, 
-        uint256 y1, uint256 x2, uint256 y2){
+
+    function assignLand(int256 x1, 
+        int256 y1, int256 x2, int256 y2) isPublic{
         if(!(lands[msg.sender].length > 0)){
-            onwers[onwers.length++] = msg.sender;
+            owners[owners.length++] = msg.sender;
         }
         lands[msg.sender].push(Land(
             x1,
@@ -69,6 +84,31 @@ contract Utopia{
             now,
             ""
         ));
+    }
+
+    function adminAssignLand(int256 x1, 
+        int256 y1, int256 x2, int256 y2, address addr) isAdmin{
+        if(!(lands[addr].length > 0)){
+            owners[owners.length++] = addr;
+        }
+        lands[addr].push(Land(
+            x1,
+            x2,
+            y1,
+            y2,
+            now,
+            ""
+        ));
+    }
+
+    function adminSetIsPublic(bool val) isAdmin{
+        allowPublicAssign = val;
+    }
+
+    function addAdmin(address addr) isAdmin{
+        assert(addr != address(0));
+        admins[admins.length++] = addr;
+        adminsMap[addr] = true;
     }
 
     function updateLand(string hash, uint256 index) returns (bool){
