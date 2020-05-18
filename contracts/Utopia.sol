@@ -72,7 +72,7 @@ contract Utopia{
 
 
     function assignLand(int256 x1, 
-        int256 y1, int256 x2, int256 y2) isPublic{
+        int256 y1, int256 x2, int256 y2, string hash) isPublic{
         if(!(lands[msg.sender].length > 0)){
             owners[owners.length++] = msg.sender;
         }
@@ -82,7 +82,7 @@ contract Utopia{
             y1,
             y2,
             now,
-            ""
+            hash
         ));
     }
 
