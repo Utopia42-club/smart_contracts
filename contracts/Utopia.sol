@@ -28,6 +28,10 @@ contract Utopia{
 
     bool public allowPublicAssign = true;
 
+    address public fundsWallet = 0x38e41787d3F428Fad17CfD5470C4cFC4c0Ee3738;
+
+    uint256 public unitLandPrice = 0.0001 ether;
+
     constructor(){
         admins[admins.length++] = msg.sender;
         adminsMap[msg.sender] = true;
@@ -72,7 +76,14 @@ contract Utopia{
 
 
     function assignLand(int256 x1, 
-        int256 y1, int256 x2, int256 y2, string hash) isPublic{
+        int256 y1, int256 x2, int256 y2, string hash)
+                isPublic public payable{
+
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * unitLandPrice;
+        assert(msg.value >= cost);
+
+        fundsWallet.transfer(msg.value);
+
         if(!(lands[msg.sender].length > 0)){
             owners[owners.length++] = msg.sender;
         }
@@ -91,6 +102,7 @@ contract Utopia{
         if(!(lands[addr].length > 0)){
             owners[owners.length++] = addr;
         }
+
         lands[addr].push(Land(
             x1,
             x2,
@@ -105,6 +117,10 @@ contract Utopia{
         allowPublicAssign = val;
     }
 
+    function adminSetUnitLandPrice(uint256 price) isAdmin{
+        unitLandPrice = price;
+    }
+
     function addAdmin(address addr) isAdmin{
         assert(addr != address(0));
         admins[admins.length++] = addr;
@@ -117,5 +133,9 @@ contract Utopia{
         }
         lands[msg.sender][index].hash = hash;
         return true;
+    }
+
+    function abs(int256 x) view public returns (uint256) {
+        return uint256(x > 0 ? x : -1*x);
     }
 }
