@@ -2,6 +2,7 @@ pragma solidity ^0.4.25;
 pragma experimental ABIEncoderV2;
 
 import 'zeppelin-solidity/contracts/math/SafeMath.sol';
+import "./Finance.sol";
 
 /**
  * @title Utopia
@@ -82,7 +83,7 @@ contract Utopia{
         uint256 cost = abs(x2-x1) * abs(y2-y1) * unitLandPrice;
         assert(msg.value >= cost);
 
-        fundsWallet.transfer(msg.value);
+        Finance(fundsWallet).deposit.value(msg.value)(address(0), msg.value, "Assign Land");
 
         if(!(lands[msg.sender].length > 0)){
             owners[owners.length++] = msg.sender;
