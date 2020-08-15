@@ -1,60 +1,10 @@
-pragma solidity ^0.6.2;
+pragma solidity ^0.4.25;
 
 /**
- * @dev Collection of functions related to the address type
+ * @title Finance interface.
  */
-library Address {
-    /**
-     * @dev Returns true if `account` is a contract.
-     *
-     * [IMPORTANT]
-     * ====
-     * It is unsafe to assume that an address for which this function returns
-     * false is an externally-owned account (EOA) and not a contract.
-     *
-     * Among others, `isContract` will return false for the following
-     * types of addresses:
-     *
-     *  - an externally-owned account
-     *  - a contract in construction
-     *  - an address where a contract will be created
-     *  - an address where a contract lived, but was destroyed
-     * ====
-     */
-    function isContract(address account) internal view returns (bool) {
-        // According to EIP-1052, 0x0 is the value returned for not-yet created accounts
-        // and 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470 is returned
-        // for accounts without code, i.e. `keccak256('')`
-        bytes32 codehash;
-        bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
-        // solhint-disable-next-line no-inline-assembly
-        assembly { codehash := extcodehash(account) }
-        return (codehash != accountHash && codehash != 0x0);
-    }
-
-    /**
-     * @dev Replacement for Solidity's `transfer`: sends `amount` wei to
-     * `recipient`, forwarding all available gas and reverting on errors.
-     *
-     * https://eips.ethereum.org/EIPS/eip-1884[EIP1884] increases the gas cost
-     * of certain opcodes, possibly making contracts go over the 2300 gas limit
-     * imposed by `transfer`, making them unable to receive funds via
-     * `transfer`. {sendValue} removes this limitation.
-     *
-     * https://diligence.consensys.net/posts/2019/09/stop-using-soliditys-transfer-now/[Learn more].
-     *
-     * IMPORTANT: because control is transferred to `recipient`, care must be
-     * taken to not create reentrancy vulnerabilities. Consider using
-     * {ReentrancyGuard} or the
-     * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
-     */
-    function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
-
-        // solhint-disable-next-line avoid-low-level-calls, avoid-call-value
-        (bool success, ) = recipient.call{ value: amount }("");
-        require(success, "Address: unable to send value, recipient may have reverted");
-    }
+contract Finance {
+    function deposit(address _token, uint256 _amount, string _reference) external payable;
 }
 
 
@@ -223,11 +173,11 @@ contract Context {
     // an instance of this contract, which should be used via inheritance.
     constructor () internal { }
 
-    function _msgSender() internal view virtual returns (address payable) {
+    function _msgSender() internal view returns (address) {
         return msg.sender;
     }
 
-    function _msgData() internal view virtual returns (bytes memory) {
+    function _msgData() internal view returns (bytes memory) {
         this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
         return msg.data;
     }
@@ -335,7 +285,6 @@ interface IERC20 {
  */
 contract ERC20 is Context, IERC20 {
     using SafeMath for uint256;
-    using Address for address;
 
     mapping (address => uint256) private _balances;
 
@@ -397,14 +346,14 @@ contract ERC20 is Context, IERC20 {
     /**
      * @dev See {IERC20-totalSupply}.
      */
-    function totalSupply() public view override returns (uint256) {
+    function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
 
     /**
      * @dev See {IERC20-balanceOf}.
      */
-    function balanceOf(address account) public view override returns (uint256) {
+    function balanceOf(address account) public view returns (uint256) {
         return _balances[account];
     }
 
@@ -416,7 +365,7 @@ contract ERC20 is Context, IERC20 {
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+    function transfer(address recipient, uint256 amount) public returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -424,7 +373,7 @@ contract ERC20 is Context, IERC20 {
     /**
      * @dev See {IERC20-allowance}.
      */
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(address owner, address spender) public view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -435,7 +384,7 @@ contract ERC20 is Context, IERC20 {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(address spender, uint256 amount) public  returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -452,7 +401,7 @@ contract ERC20 is Context, IERC20 {
      * - the caller must have allowance for ``sender``'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) public virtual override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public  returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "ERC20: transfer amount exceeds allowance"));
         return true;
@@ -470,7 +419,7 @@ contract ERC20 is Context, IERC20 {
      *
      * - `spender` cannot be the zero address.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender].add(addedValue));
         return true;
     }
@@ -489,7 +438,7 @@ contract ERC20 is Context, IERC20 {
      * - `spender` must have allowance for the caller of at least
      * `subtractedValue`.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
         _approve(_msgSender(), spender, _allowances[_msgSender()][spender].sub(subtractedValue, "ERC20: decreased allowance below zero"));
         return true;
     }
@@ -508,7 +457,7 @@ contract ERC20 is Context, IERC20 {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function _transfer(address sender, address recipient, uint256 amount) internal virtual {
+    function _transfer(address sender, address recipient, uint256 amount) internal {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
@@ -528,7 +477,7 @@ contract ERC20 is Context, IERC20 {
      *
      * - `to` cannot be the zero address.
      */
-    function _mint(address account, uint256 amount) internal virtual {
+    function _mint(address account, uint256 amount) internal{
         require(account != address(0), "ERC20: mint to the zero address");
 
         _beforeTokenTransfer(address(0), account, amount);
@@ -549,7 +498,7 @@ contract ERC20 is Context, IERC20 {
      * - `account` cannot be the zero address.
      * - `account` must have at least `amount` tokens.
      */
-    function _burn(address account, uint256 amount) internal virtual {
+    function _burn(address account, uint256 amount) internal {
         require(account != address(0), "ERC20: burn from the zero address");
 
         _beforeTokenTransfer(account, address(0), amount);
@@ -572,7 +521,7 @@ contract ERC20 is Context, IERC20 {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function _approve(address owner, address spender, uint256 amount) internal virtual {
+    function _approve(address owner, address spender, uint256 amount) internal {
         require(owner != address(0), "ERC20: approve from the zero address");
         require(spender != address(0), "ERC20: approve to the zero address");
 
@@ -605,7 +554,7 @@ contract ERC20 is Context, IERC20 {
      *
      * To learn more about hooks, head to xref:ROOT:extending-contracts.adoc#using-hooks[Using Hooks].
      */
-    function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual { }
+    function _beforeTokenTransfer(address from, address to, uint256 amount) internal  { }
 }
 
 contract UtopiaUBI is ERC20{
@@ -620,15 +569,31 @@ contract UtopiaUBI is ERC20{
     uint256 public coinsPerDay = 10 ether;
     uint256 public userInitialCoins = 1000 ether;
 
+    uint256 public launchDate;
+
+    address public utopiaDAOFinance = 0x38e41787d3F428Fad17CfD5470C4cFC4c0Ee3738;
+    
+    // x percent of each withdraw will go 
+    uint8 public utopiaDAOPercent = 10;    
+
     uint256 public usersCount = 0;
+
+    bool public settingsLocked = false;
+
+    uint256 public withdrawedAmountDAO = 0;
 
     constructor() ERC20("Utopia UBI", "UBI") public{
         admins[msg.sender] = true;
-
+        launchDate = now - 1 days - 1000;
     }
     
     modifier isAdmin(){
         require(admins[msg.sender]);
+        _;
+    }
+
+    modifier notLocked(){
+        require(!settingsLocked);
         _;
     }
 
@@ -637,7 +602,7 @@ contract UtopiaUBI is ERC20{
         _;
     }
         
-    receive() payable external{
+    function() payable external{
         require(false, "ETH not accepted.");
     }
 
@@ -648,16 +613,59 @@ contract UtopiaUBI is ERC20{
         lastClaimed[_user] = now;
     }
 
+    function addAdmin(address _admin) isAdmin public{
+        admins[_admin] = true;
+    }
+
     function pendingAmount(address _wallet) view public returns(uint256){
         uint256 ndays = lastClaimed[msg.sender].sub(
             users[_wallet]
         ).div(24*3600);
-        return ndays.mul(coinsPerDay);
+        return ndays.mul(coinsPerDay).sub(
+            balanceOf(_wallet)
+        );
+    }
+
+    function pendingAmountDAO() view public returns(uint256){
+        uint256 ndays = now.sub(
+            launchDate
+        ).div(24*3600);
+        return ndays.mul(coinsPerDay).mul(
+            usersCount
+        ).mul(utopiaDAOPercent).div(100).sub(
+            withdrawedAmountDAO
+        );
+    }
+
+    function withdrawDAO() public{
+        uint256 amount = pendingAmountDAO();
+        // mint to contract address
+        Finance finance = Finance(utopiaDAOFinance);
+        _mint(address(this), amount);
+        _approve(address(this), address(finance), amount);
+        finance.deposit(address(this), amount, "Utopia UBI");
+        withdrawedAmountDAO = withdrawedAmountDAO.add(amount);
     }
 
     function withdraw() isMember public{
         uint256 amount = pendingAmount(msg.sender);
         _mint(msg.sender, amount);
         lastClaimed[msg.sender] = now;   
+    }
+
+    function setCoinsPerDay(uint256 _coinsPerDay) isAdmin notLocked public{
+        coinsPerDay = _coinsPerDay;
+    }
+
+    function setUserInitialCoins(uint256 _userInitialCoins) isAdmin notLocked public{
+        userInitialCoins = _userInitialCoins;
+    }
+
+    function setUtopiaDAOPercent(uint8 _percent) isAdmin notLocked public{
+        utopiaDAOPercent = _percent;
+    }
+
+    function lockSettings() isAdmin notLocked public{
+        settingsLocked = true;
     }
 }

@@ -1,4 +1,4 @@
-const Token = artifacts.require('./ROICoin.sol');
+const UtopiaUBI = artifacts.require('./UtopiaUBI.sol');
 
 const toWei = (number) => number * Math.pow(10, 18);
 const fromWei = (n) => n / Math.pow(10, 18);
@@ -23,42 +23,19 @@ contract('Token', accounts => {
 
     const oneEth = toWei(1);
 
-    const createToken = () => Token.new();
+    const createToken = () => UtopiaUBI.new({from: admin1});
 
     it('check buy', async () => {
         const token = await createToken();
         
-        const balanceInit = await token.balanceOf(investor1);
-        assert.equal(balanceInit, toWei(0), 'initial balance mismatch');
+        await token.addUser(investor1, {from:admin1})
+        await token.withdrawDAO({from:admin1});
 
-        await token.sendTransaction(transaction(investor1, oneEth));
-
-        const balance = await token.balanceOf(investor1);
+        const balance = await token.balanceOf(token.address);
         console.log(balance);
         console.log(fromWei(balance));
 
-
-        const e3 = await token.walletInfo(investor1);
-        console.log(e3);
     });
 
-    it('check refs', async () => {
-        const token = await createToken();
-        
-        console.log(await token.walletInfo(investor1));
-
-        await token.buy('0x0000000000000000000000000000000000000000', 
-            '0x0000000000000000000000000000000000000000',
-            {from: investor1, value: oneEth});
-
-        await token.buy(investor1, 
-            '0x0000000000000000000000000000000000000000',
-            {from: investor2, value: oneEth});        
-
-        console.log(await token.walletRefs(investor1, 1));
-        console.log(await token.walletRefs(investor2, 1));
-        //const e3 = await token.walletInfo(investor1);
-        //console.log(e3);
-    });
-
+   
 });
