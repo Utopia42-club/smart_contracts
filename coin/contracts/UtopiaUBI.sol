@@ -618,7 +618,10 @@ contract UtopiaUBI is ERC20{
     }
 
     function pendingAmount(address _wallet) view public returns(uint256){
-        uint256 ndays = lastClaimed[msg.sender].sub(
+        if(!users[_wallet] || !lastClaimed[_wallet]){
+            return 0;
+        }
+        uint256 ndays = lastClaimed[_wallet].sub(
             users[_wallet]
         ).div(24*3600);
         return ndays.mul(coinsPerDay).sub(
