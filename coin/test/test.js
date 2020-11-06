@@ -28,13 +28,15 @@ contract('Token', accounts => {
     it('check buy', async () => {
         const token = await createToken();
         
-        await token.addUser(investor1, {from:admin1})
-        await token.withdrawDAO({from:admin1});
+        //await token.addUser(investor1, {from:admin1})
+        //await token.withdrawDAO({from:admin1});
 
-        const balance = await token.balanceOf(token.address);
-        console.log(balance);
-        console.log(fromWei(balance));
+        //const balance = await token.balanceOf(token.address);
+        //console.log(balance);
+        //console.log(fromWei(balance));
 
+        //const b = await token.pendingAmount(investor1);
+        //console.log(b);
     });
 
    

@@ -568,13 +568,15 @@ contract UtopiaUBI is ERC20{
 
     uint256 public coinsPerDay = 10 ether;
     uint256 public userInitialCoins = 1000 ether;
+    uint256 public utopiaDAOInitialCoins = 1000000000 ether;
 
-    uint256 public launchDate;
+    uint256 public utopiaDAOLastPaidTime = 0;
 
     address public utopiaDAOFinance = 0x38e41787d3F428Fad17CfD5470C4cFC4c0Ee3738;
+
     
     // x percent of each withdraw will go 
-    uint8 public utopiaDAOPercent = 10;    
+    uint8 public utopiaDAOPercent = 12;    
 
     uint256 public usersCount = 0;
 
@@ -582,9 +584,10 @@ contract UtopiaUBI is ERC20{
 
     uint256 public withdrawedAmountDAO = 0;
 
-    constructor() ERC20("Utopia UBI", "UBI") public{
+    constructor() ERC20("Utopia UBI", "UNBC") public{
         admins[msg.sender] = true;
-        launchDate = now - 1 days - 1000;
+        // DAO initial coins
+        withdrawDAO();        
     }
     
     modifier isAdmin(){
@@ -607,6 +610,8 @@ contract UtopiaUBI is ERC20{
     }
 
     function addUser(address _user) isAdmin public{
+        withdrawDAO();
+
         users[_user] = now;
         usersCount += 1;
         _mint(_user, userInitialCoins);
@@ -618,36 +623,40 @@ contract UtopiaUBI is ERC20{
     }
 
     function pendingAmount(address _wallet) view public returns(uint256){
-        if(!users[_wallet] || !lastClaimed[_wallet]){
+        if(users[_wallet]==0 || lastClaimed[_wallet]==0){
             return 0;
         }
-        uint256 ndays = lastClaimed[_wallet].sub(
-            users[_wallet]
-        ).div(24*3600);
-        return ndays.mul(coinsPerDay).sub(
-            balanceOf(_wallet)
-        );
+        uint256 ndays = now.sub(
+            lastClaimed[_wallet]
+        ).div(1 days);
+
+        return ndays.mul(coinsPerDay);
     }
 
     function pendingAmountDAO() view public returns(uint256){
         uint256 ndays = now.sub(
-            launchDate
-        ).div(24*3600);
+            utopiaDAOLastPaidTime
+        ).div(1 days);
         return ndays.mul(coinsPerDay).mul(
             usersCount
-        ).mul(utopiaDAOPercent).div(100).sub(
-            withdrawedAmountDAO
-        );
+        ).mul(utopiaDAOPercent).div(100);
     }
 
     function withdrawDAO() public{
-        uint256 amount = pendingAmountDAO();
+        uint256 amount = utopiaDAOLastPaidTime == 0 ?
+            utopiaDAOInitialCoins : pendingAmountDAO();
+        if(amount <= 0){
+            return;
+        }
         // mint to contract address
         Finance finance = Finance(utopiaDAOFinance);
         _mint(address(this), amount);
         _approve(address(this), address(finance), amount);
         finance.deposit(address(this), amount, "Utopia UBI");
         withdrawedAmountDAO = withdrawedAmountDAO.add(amount);
+
+        // update last paid time
+        utopiaDAOLastPaidTime = now;
     }
 
     function withdraw() isMember public{

@@ -29,7 +29,7 @@ contract Utopia{
 
     bool public allowPublicAssign = true;
 
-    address public fundsWallet = 0x38e41787d3F428Fad17CfD5470C4cFC4c0Ee3738;
+    address public fundsWallet = 0x22fd697b06fee6f5c5df5cdd4283bd45cc73b056;
 
     uint256 public unitLandPrice = 0.0001 ether;
 
