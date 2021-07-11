@@ -240,7 +240,7 @@ contract UtopiaUBIV2 is ERC20, ERC20Detailed{
     }
 
     function addUser(address _user) isAdmin public{
-        required(users[_user] == 0, 'Duplicate User');
+        require(users[_user] == 0, 'Duplicate User');
         withdrawDAO();
 
         users[_user] = now;
