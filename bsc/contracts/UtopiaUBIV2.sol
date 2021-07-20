@@ -240,6 +240,7 @@ contract UtopiaUBIV2 is ERC20, ERC20Detailed{
     }
 
     function addUser(address _user) isAdmin public{
+        require(users[_user] == 0, 'Duplicate User');
         withdrawDAO();
 
         users[_user] = now;
@@ -311,7 +312,7 @@ contract UtopiaUBIV2 is ERC20, ERC20Detailed{
     }
 
     function balanceOf(address account) public view returns (uint) {
-        return ERC20.balanceOf(account).add(pendingAmount(msg.sender));
+        return ERC20.balanceOf(account).add(pendingAmount(account));
     }
 
     function setCoinsPerDay(uint256 _coinsPerDay) isAdmin notLocked public{
