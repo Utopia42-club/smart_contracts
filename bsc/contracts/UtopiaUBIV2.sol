@@ -206,7 +206,7 @@ contract UtopiaUBIV2 is ERC20, ERC20Detailed{
 
     uint256 public utopiaDAOLastPaidTime = 0;
 
-    address public utopiaDAOFinance = 0x22fd697B06Fee6F5c5Df5cdd4283BD45cc73B056;
+    address public utopiaDAOFinance = 0x9F9aD37CBc96A702552526Ad733cf0Dca6f0b0aC;
 
     
     // x percent of each withdraw 
