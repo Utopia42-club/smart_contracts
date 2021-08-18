@@ -61,6 +61,9 @@ contract Utopia{
     address[] public admins;
 
     address[] public owners;
+
+    mapping(address => bool) public ownersMap;
+
     mapping(address => Land[]) public lands;
 
     bool public allowPublicAssign = true;
@@ -122,9 +125,11 @@ contract Utopia{
         //Finance(fundsWallet).deposit.value(msg.value)(address(0), msg.value, "Assign Land");
         fundsWallet.transfer(msg.value);
 
-        if(!(lands[msg.sender].length > 0)){
+        if(!ownersMap[msg.sender]){
             owners[owners.length++] = msg.sender;
+            ownersMap[msg.sender] = true;
         }
+
         lands[msg.sender].push(Land(
             x1,
             x2,
@@ -136,9 +141,11 @@ contract Utopia{
     }
 
     function adminAssignLand(int256 x1, 
-        int256 y1, int256 x2, int256 y2, address addr) public isAdmin{
-        if(!(lands[addr].length > 0)){
+        int256 y1, int256 x2, int256 y2, address addr, string memory hash) public isAdmin{
+        
+        if(!ownersMap[addr]){
             owners[owners.length++] = addr;
+            ownersMap[addr] = true;
         }
 
         lands[addr].push(Land(
@@ -147,7 +154,7 @@ contract Utopia{
             y1,
             y2,
             now,
-            ""
+            hash
         ));
     }
 
@@ -170,18 +177,12 @@ contract Utopia{
     }
 
     function updateLand(string memory hash, uint256 index) public returns (bool){
-        // if(lands[msg.sender].length <= index){
-        //     return false;
-        // }
         require(index < lands[msg.sender].length, "!owner");
         lands[msg.sender][index].hash = hash;
         return true;
     }
 
     function transferLand(uint256 index, address _to) public returns(bool){
-        // if(lands[msg.sender].length <= index){
-        //     return false;
-        // }
         require(index < lands[msg.sender].length, "!owner");
         // add the land to _to
         Land memory l = lands[msg.sender][index];
@@ -197,6 +198,12 @@ contract Utopia{
         //remove from current owner
         lands[msg.sender][index] = lands[msg.sender][lands[msg.sender].length-1];
         lands[msg.sender].length--;
+
+        if(!ownersMap[_to]){
+            owners[owners.length++] = _to;
+            ownersMap[_to] = true;
+        }
+
         return true;
     }
 
