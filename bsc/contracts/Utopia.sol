@@ -99,8 +99,8 @@ contract Utopia{
     function getLand(address owner, uint256 index) 
     view public returns (
         int256 x1,
-        int256 y1,
         int256 x2,
+        int256 y1,
         int256 y2,
         uint256 time, string memory hash) {
         
@@ -115,8 +115,8 @@ contract Utopia{
     }
 
 
-    function assignLand(int256 x1, 
-        int256 y1, int256 x2, int256 y2, string memory hash)
+    function assignLand(int256 x1,
+        int256 x2, int256 y1, int256 y2, string memory hash)
                 isPublic public payable{
 
         uint256 cost = abs(x2-x1) * abs(y2-y1) * unitLandPrice;
@@ -141,7 +141,7 @@ contract Utopia{
     }
 
     function adminAssignLand(int256 x1, 
-        int256 y1, int256 x2, int256 y2, address addr, string memory hash) public isAdmin{
+        int256 x2, int256 y1, int256 y2, address addr, string memory hash) public isAdmin{
         
         if(!ownersMap[addr]){
             owners[owners.length++] = addr;
@@ -208,7 +208,7 @@ contract Utopia{
     }
 
     function landPrice(int256 x1, 
-        int256 y1, int256 x2, int256 y2)
+        int256 x2, int256 y1, int256 y2)
                 view public returns(uint256){
         return abs(x2-x1) * abs(y2-y1) * unitLandPrice;
     }

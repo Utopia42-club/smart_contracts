@@ -16,7 +16,7 @@ const contract = new web3.eth.Contract(utopiaAbi, process.env.NEW_UTOPIA_ADDRESS
     if (row[1] == 'Lands') return
     const address = row[0];
     const lands = JSON.parse(row[1]);
-    lands.forEach(async land => {
+    lands.forEach(land => {
       contract.methods.adminAssignLand(
         land[0],
         land[1],
