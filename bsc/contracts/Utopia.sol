@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
 /**
@@ -59,9 +60,11 @@ contract Utopia is AccessControl{
         _;
     }
 
-    constructor(){
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+    constructor(
+        address _owner
+    ){
+        _setupRole(DEFAULT_ADMIN_ROLE, _owner);
+        _setupRole(ADMIN_ROLE, _owner);
     }
 
     function assignLand(int256 x1,
