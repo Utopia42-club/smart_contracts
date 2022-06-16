@@ -58,6 +58,7 @@ contract Utopia is AccessControl{
     event Assign(uint256 landId, int256 x1,
         int256 x2, int256 y1, int256 y2, address owner, string hash);
     event LandUpdate(uint256 landId, string hash);
+    event LandTransfer(uint256 landId, address from, address to);
 
     modifier onlyAdmin {
         require(hasRole(ADMIN_ROLE, msg.sender), "!admin");
@@ -125,7 +126,7 @@ contract Utopia is AccessControl{
 
         if(ownerLands[owner].length > 1){
             ownerLands[owner][index] = ownerLands[owner][ownerLands[owner].length-1];
-            lands[ownerLands[owner][index]].ownerIndex = index;    
+            lands[ownerLands[owner][index]].ownerIndex = index;
         }
 
         ownerLands[owner].pop();
@@ -145,13 +146,14 @@ contract Utopia is AccessControl{
         //remove from current owner
         if(ownerLands[_from].length > 1){
             ownerLands[_from][index] = ownerLands[_from][ownerLands[_from].length-1];
-            lands[ownerLands[_from][index]].ownerIndex = index;    
+            lands[ownerLands[_from][index]].ownerIndex = index;
         }
 
         ownerLands[_from].pop();
+        emit LandTransfer(landId, _from, _to);
     }
 
-    function adminAssignLand(int256 x1, 
+    function adminAssignLand(int256 x1,
         int256 x2, int256 y1, int256 y2, address addr, string memory hash)
         public onlyAdmin{
 
@@ -171,8 +173,8 @@ contract Utopia is AccessControl{
     }
 
     function assignLandConflictFree(int256 x1,
-        int256 x2, int256 y1, int256 y2, string memory hash, 
-        uint lastLandChecked, bytes calldata sig 
+        int256 x2, int256 y1, int256 y2, string memory hash,
+        uint lastLandChecked, bytes calldata sig
     ) isPublic public payable{
         bytes32 sigHash = keccak256(abi.encodePacked(
             x1, x2, y1, y2, lastLandChecked
@@ -191,7 +193,7 @@ contract Utopia is AccessControl{
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
 
-    function assignLandInternal(int256 x1, 
+    function assignLandInternal(int256 x1,
         int256 x2, int256 y1, int256 y2, address addr, string memory hash) private{
         uint256 landId = ++lastLandId;
         lands[landId] = Land(
@@ -247,7 +249,7 @@ contract Utopia is AccessControl{
     }
 
     function adminEnableWithoutSig(bool val) public onlyAdmin{
-        assignLandWithoutSigEnabled = val;   
+        assignLandWithoutSigEnabled = val;
     }
 
     function adminEnableLandToNFT(bool val) public onlyAdmin{
