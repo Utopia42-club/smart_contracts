@@ -151,7 +151,7 @@ contract Utopia is AccessControl{
 
     function landToNFT(uint256 landId) public{
         require(lands[landId].owner == msg.sender, "!owner");
-        require(!lands[landId].isNFT, "alreay NFT");
+        require(!lands[landId].isNFT, "already NFT");
 
         lands[landId].isNFT = true;
         IUtpoiaNFT(nftContract).mint(msg.sender, landId);

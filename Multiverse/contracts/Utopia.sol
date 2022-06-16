@@ -80,7 +80,7 @@ contract Utopia is AccessControl{
         _;
     }
 
-    constructor(){
+    constructor(address _owner){
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
         _setupRole(ADMIN_ROLE, _owner);
     }

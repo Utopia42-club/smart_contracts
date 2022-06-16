@@ -1,10 +1,8 @@
 var utopia = artifacts.require('./Utopia.sol')
 var nft = artifacts.require('./UtopiaNFT.sol')
-var factory = artifacts.require('./UtopiaFactory.sol')
 
 module.exports = async function (deployer) {
-	await deployer.deploy(factory)
-	// await deployer.deploy(utopia);
+	await deployer.deploy(utopia);
 	// utopiaDepolyed = await utopia.deployed();
 
 	// await deployer.deploy(nft, utopiaDepolyed.address);
