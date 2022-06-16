@@ -17,6 +17,8 @@ contract Utopia is AccessControl{
     bytes32 constant public ADMIN_ROLE = keccak256("Admin Role");
     bytes32 constant public NFT_ROLE = keccak256("NFT ROLE");
 
+    event LandTransfer(uint256 landId, address from, address to);
+
     struct Land{
         uint256 id;
         int256 x1;
@@ -122,14 +124,15 @@ contract Utopia is AccessControl{
             ownerLands[_from][index] = ownerLands[_from][ownerLands[_from].length-1];
             lands[ownerLands[_from][index]].ownerIndex = index;    
         }
-        
+
         ownerLands[_from].pop();
+        emit LandTransfer(landId, _from, _to);
     }
 
     function adminAssignLand(int256 x1, 
         int256 x2, int256 y1, int256 y2, address addr, string memory hash)
         public onlyAdmin{
-     
+
         uint256 landId = ++lastLandId;
         lands[landId] = Land(
             landId,
