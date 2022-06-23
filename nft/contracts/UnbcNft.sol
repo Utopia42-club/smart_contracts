@@ -56,7 +56,7 @@ contract UnbcNft is MRC721 {
         //TODO
         //chech this condition
         // require(verifications[addrs[0]].time < timestamp, "Newer verification registered before");
-        require(verifications[addrs[0]].isVerified, "Registered before");
+        require(!verifications[addrs[0]].isVerified, "Registered before");
 
         bytes32 message = keccak256(abi.encodePacked(app, addrs, timestamp));
         address _signer = ecrecover(message, v, r, s);
