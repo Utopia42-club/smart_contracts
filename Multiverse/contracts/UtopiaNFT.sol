@@ -17,8 +17,12 @@ contract UtopiaNFT is ERC721Enumerable, Ownable{
         _;
     }
 
-    constructor(address _utopia) ERC721("Utopia42 Lands", "UL42"){
+    constructor (
+        address _utopia,
+        address _owner
+        ) ERC721("Utopia42 Lands", "UL42") {
         utopiaContract = _utopia;
+        transferOwnership(_owner);
     }
 
 
