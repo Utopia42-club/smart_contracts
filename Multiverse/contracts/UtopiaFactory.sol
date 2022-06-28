@@ -21,7 +21,8 @@ contract UtopiaFactory{
         ));
         lands[_owner] = land;
         collection = address(new UtopiaNFT(
-            land
+            land,
+            _owner
         ));
         collections[land] = collection;
         emit LandCreated(_owner, block.timestamp, land, collection);
