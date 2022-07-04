@@ -109,4 +109,18 @@ contract UnbcNft is MRC721 {
         require(nfts[tokenId].nonTransferable == false, 'This tokenId is not transferable');
     }
 
+    function userHasAccessToken (
+        address _user,
+        uint256 _token_id
+    ) public view returns(bool) {
+        if (
+            verifications[_user].isVerified &&
+            uniqueOwner[_user] == _token_id
+           ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
