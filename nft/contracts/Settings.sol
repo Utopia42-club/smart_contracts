@@ -60,6 +60,14 @@ contract Settings is AccessControl {
 
     }
 
+    function updateDefaultSettings(string[] memory _newDefaultSettings) public onlyAdmin {
+        defaultSettings = _newDefaultSettings;
+    }
+
+    function getDeafaultSettings() public view returns(string[] memory) {
+        return defaultSettings;
+    }
+
     function userInfo(address _user) view public returns(string[] memory ) {
         string[] memory setts = new string[](defaultSettings.length);
         uint256 tokenId = userToken[_user];
