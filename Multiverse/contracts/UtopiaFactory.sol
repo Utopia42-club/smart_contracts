@@ -10,7 +10,7 @@ contract UtopiaFactory is AccessControl {
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public collectionFactory;
 
-    uint256 verseCreationFee = .001 ether;
+    uint256 public verseCreationFee = .001 ether;
 
 
     event VerseCreated(address owner, address creator, uint256 time, address verseAddress, address collectionAddress);
