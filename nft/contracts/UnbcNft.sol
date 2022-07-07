@@ -22,7 +22,7 @@ contract UnbcNft is MRC721 {
     mapping(address => Verification) public verifications;
     mapping(uint256 => Nft) public nfts;
     mapping(address => uint256) public uniqueOwner;
-
+    mapping(address => uint256) public usersTokenRegistered;
 
 	constructor(
         address _signer,
@@ -76,6 +76,12 @@ contract UnbcNft is MRC721 {
         verifications[addrs[0]].time = timestamp;
         verifications[addrs[0]].isVerified = true;
         for(uint i = 0; i < addrs.length; i++) {
+            uint256 tokenRegistered = usersTokenRegistered[addrs[i]];
+            if (tokenRegistered != 0) {
+                nfts[tokenRegistered].nonTransferable = false;
+                nfts[tokenRegistered].currentOwner = address(0);
+            }
+            delete usersTokenRegistered[addrs[i]];
             uniqueOwner[addrs[i]] = _nftId;
             if (i == 0) continue;
             verifications[addrs[i]].time = timestamp;
@@ -92,6 +98,20 @@ contract UnbcNft is MRC721 {
         return true;
     }
 
+    function registerToken(
+        uint256 _tokenId
+    ) public {
+        require(ownerOf(_tokenId) == msg.sender, 'UnbcNft: Only Token Owner');
+        require(usersTokenRegistered[msg.sender] == 0 &&
+                uniqueOwner[msg.sender] == 0,
+                'UnbcNft: Already registered another token'
+                );
+        nfts[_tokenId].nonTransferable = true;
+        nfts[_tokenId].currentOwner = msg.sender;
+        nfts[_tokenId].ownerHistory.push(msg.sender);
+        usersTokenRegistered[msg.sender] = _tokenId;
+    }
+
     function nftOwnerHistory(uint256 _tokenId) view public returns(address[] memory) {
         address[] memory owners = new address[](nfts[_tokenId].ownerHistory.length);
         for (uint i = 0; i < nfts[_tokenId].ownerHistory.length; i++) {
@@ -106,21 +126,28 @@ contract UnbcNft is MRC721 {
         uint256 tokenId
     ) internal override {
         super._beforeTokenTransfer(from, to, tokenId);
-        require(nfts[tokenId].nonTransferable == false, 'This tokenId is not transferable');
+        require(!nfts[tokenId].nonTransferable, 'This tokenId is not transferable');
     }
 
     function userHasAccessToken (
         address _user,
-        uint256 _token_id
+        uint256 _tokenId
     ) public view returns(bool) {
         if (
             verifications[_user].isVerified &&
-            uniqueOwner[_user] == _token_id
+            uniqueOwner[_user] == _tokenId
            ) {
             return true;
         } else {
             return false;
         }
+    }
+
+    function userHasRegisteredToken (
+        address _user,
+        uint256 _tokenId
+    ) public view returns(bool) {
+        return usersTokenRegistered[_user] == _tokenId;
     }
 
 }
