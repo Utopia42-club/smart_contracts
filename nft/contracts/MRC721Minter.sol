@@ -35,7 +35,7 @@ contract MRC721Minter is Ownable {
     _mint(_to, _count);
   }
 
-  function mintAndRegister(
+  function mintAndRegisterBrightID(
     address _to,
     address[] memory addrs,
     uint timestamp,
@@ -57,6 +57,19 @@ contract MRC721Minter is Ownable {
       r,
       s
     ), 'Minter: setting BrightID was failed');
+  }
+
+  function mintAndRegister(
+    address _to
+  ) public payable {
+    uint _count = 1;
+    require(mintEnabled, "!enabled");
+    require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
+    require(msg.value >= price(_count), "!value");
+    uint _nftId = nftContract.totalSupply();
+    nftContract.mint(_to, _nftId);
+    require(nftContract.registerToken(_nftId),
+     'Minter: Registering token was failed');
   }
 
   function _mint(address _to, uint _count) private{

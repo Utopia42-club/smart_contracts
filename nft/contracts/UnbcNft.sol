@@ -100,16 +100,17 @@ contract UnbcNft is MRC721 {
 
     function registerToken(
         uint256 _tokenId
-    ) public {
-        require(ownerOf(_tokenId) == msg.sender, 'UnbcNft: Only Token Owner');
-        require(usersTokenRegistered[msg.sender] == 0 &&
-                uniqueOwner[msg.sender] == 0,
+    ) public returns(bool){
+        require(ownerOf(_tokenId) == tx.origin, 'UnbcNft: Only Token Owner');
+        require(usersTokenRegistered[tx.origin] == 0 &&
+                uniqueOwner[tx.origin] == 0,
                 'UnbcNft: Already registered another token'
                 );
         nfts[_tokenId].nonTransferable = true;
-        nfts[_tokenId].currentOwner = msg.sender;
-        nfts[_tokenId].ownerHistory.push(msg.sender);
-        usersTokenRegistered[msg.sender] = _tokenId;
+        nfts[_tokenId].currentOwner = tx.origin;
+        nfts[_tokenId].ownerHistory.push(tx.origin);
+        usersTokenRegistered[tx.origin] = _tokenId;
+        return true;
     }
 
     function nftOwnerHistory(uint256 _tokenId) view public returns(address[] memory) {
