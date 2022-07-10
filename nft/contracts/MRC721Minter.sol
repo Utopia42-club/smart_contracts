@@ -66,7 +66,7 @@ contract MRC721Minter is Ownable {
     require(mintEnabled, "!enabled");
     require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
     require(msg.value >= price(_count), "!value");
-    uint _nftId = nftContract.totalSupply();
+    uint _nftId = nftContract.totalSupply() + 1;
     nftContract.mint(_to, _nftId);
     require(nftContract.registerToken(_nftId),
      'Minter: Registering token was failed');

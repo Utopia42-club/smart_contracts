@@ -42,6 +42,7 @@ contract UnbcNft is MRC721 {
         address to,
         uint256 id
     ) internal virtual override {
+        require(id > 0, 'UnbcNft: Id should grater than 0');
     	require(totalSupply() <= maxSupply, "> maxSupply");
     }
 
