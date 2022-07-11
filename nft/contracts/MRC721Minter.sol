@@ -35,42 +35,42 @@ contract MRC721Minter is Ownable {
     _mint(_to, _count);
   }
 
-  function mintAndRegisterBrightID(
-    address _to,
-    address[] memory addrs,
-    uint timestamp,
-    uint8 v,
-    bytes32 r,
-    bytes32 s
-  ) public payable {
-    uint _count = 1;
-    require(mintEnabled, "!enabled");
-    require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
-    require(msg.value >= price(_count), "!value");
-    uint _nftId = nftContract.totalSupply();
-    nftContract.mint(_to, _nftId);
-    require(nftContract.setBrightId(
-      _nftId,
-      addrs,
-      timestamp,
-      v,
-      r,
-      s
-    ), 'Minter: setting BrightID was failed');
-  }
+  // function mintAndRegisterBrightID(
+  //   address _to,
+  //   address[] memory addrs,
+  //   uint timestamp,
+  //   uint8 v,
+  //   bytes32 r,
+  //   bytes32 s
+  // ) public payable {
+  //   uint _count = 1;
+  //   require(mintEnabled, "!enabled");
+  //   require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
+  //   require(msg.value >= price(_count), "!value");
+  //   uint _nftId = nftContract.totalSupply();
+  //   nftContract.mint(_to, _nftId);
+  //   require(nftContract.setBrightId(
+  //     _nftId,
+  //     addrs,
+  //     timestamp,
+  //     v,
+  //     r,
+  //     s
+  //   ), 'Minter: setting BrightID was failed');
+  // }
 
-  function mintAndRegister(
-    address _to
-  ) public payable {
-    uint _count = 1;
-    require(mintEnabled, "!enabled");
-    require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
-    require(msg.value >= price(_count), "!value");
-    uint _nftId = nftContract.totalSupply() + 1;
-    nftContract.mint(_to, _nftId);
-    require(nftContract.registerToken(_nftId),
-     'Minter: Registering token was failed');
-  }
+  // function mintAndRegister(
+  //   address _to
+  // ) public payable {
+  //   uint _count = 1;
+  //   require(mintEnabled, "!enabled");
+  //   require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
+  //   require(msg.value >= price(_count), "!value");
+  //   uint _nftId = nftContract.totalSupply() + 1;
+  //   nftContract.mint(_to, _nftId);
+  //   require(nftContract.registerToken(_nftId),
+  //    'Minter: Registering token was failed');
+  // }
 
   function _mint(address _to, uint _count) private{
     for(uint i = 0; i < _count; i++){

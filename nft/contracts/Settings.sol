@@ -28,10 +28,10 @@ contract Settings is AccessControl {
         _;
     }
 
-    modifier userHasRegistered(uint256 _tokenId) {
-        require(UnbcNft(nftAddress).userHasRegisteredToken(msg.sender, _tokenId), 'Settings: !Authorized');
-        _;
-    }
+    // modifier userHasRegistered(uint256 _tokenId) {
+    //     require(UnbcNft(nftAddress).userHasRegisteredToken(msg.sender, _tokenId), 'Settings: !Authorized');
+    //     _;
+    // }
 
     modifier checkKeys (string[] calldata keys) {
         for (uint i = 0; i < keys.length; i++) {
@@ -52,7 +52,7 @@ contract Settings is AccessControl {
         nftAddress = _nftAddress;
     }
 
-    function updateSettingsByBrigthId(
+    function updateSettings(
         uint256 _tokenId,
         string[] calldata keys,
         string[] calldata values
@@ -65,17 +65,17 @@ contract Settings is AccessControl {
 
     }
 
-    function updateSettings(
-        uint256 _tokenId,
-        string[] calldata keys,
-        string[] calldata values
-    ) public userHasRegistered(_tokenId) checkKeys(keys) {
-        require(keys.length == values.length, 'Settings: Invalid input length');
-        for (uint i = 0; i < keys.length; i++) {
-            settings[_tokenId][keys[i]] = values[i];
-        }
-        userToken[msg.sender] = _tokenId;
-    }
+    // function updateSettings(
+    //     uint256 _tokenId,
+    //     string[] calldata keys,
+    //     string[] calldata values
+    // ) public userHasRegistered(_tokenId) checkKeys(keys) {
+    //     require(keys.length == values.length, 'Settings: Invalid input length');
+    //     for (uint i = 0; i < keys.length; i++) {
+    //         settings[_tokenId][keys[i]] = values[i];
+    //     }
+    //     userToken[msg.sender] = _tokenId;
+    // }
 
     function updateDefaultSettings(string[] memory _newDefaultSettings) public onlyAdmin {
         defaultSettings = _newDefaultSettings;
@@ -87,7 +87,8 @@ contract Settings is AccessControl {
 
     function userInfo(address _user) view public returns(string[] memory ) {
         string[] memory setts = new string[](defaultSettings.length);
-        uint256 tokenId = userToken[_user];
+        // uint256 tokenId = userToken[_user];
+        uint256 tokenId = UnbcNft(nftAddress).getUserCitizenID(_user);
         for (uint i = 0; i < defaultSettings.length; i++) {
             setts[i] = settings[tokenId][defaultSettings[i]];
         }

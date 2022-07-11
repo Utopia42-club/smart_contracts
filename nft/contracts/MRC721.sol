@@ -34,7 +34,7 @@ contract MRC721 is ERC721Enumerable, AccessControl{
         return _baseTokenURI;
     }
 
-    function tokensOfOwner(address _owner) external view returns(uint256[] memory) {
+    function tokensOfOwner(address _owner) public view returns(uint256[] memory) {
         uint tokenCount = balanceOf(_owner);
         uint256[] memory tokensIds = new uint256[](tokenCount);
         for(uint i = 0; i < tokenCount; i++){

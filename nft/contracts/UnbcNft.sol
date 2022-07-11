@@ -43,6 +43,11 @@ contract UnbcNft is MRC721 {
         uint256 id
     ) internal virtual override {
         require(id > 0, 'UnbcNft: Id should grater than 0');
+        if (
+            getUserCitizenID(to) == 0
+            ) {
+            registerToken(id, to);
+        }
     	require(totalSupply() <= maxSupply, "> maxSupply");
     }
 
@@ -100,18 +105,28 @@ contract UnbcNft is MRC721 {
     }
 
     function registerToken(
-        uint256 _tokenId
-    ) public returns(bool){
-        require(ownerOf(_tokenId) == tx.origin, 'UnbcNft: Only Token Owner');
-        require(usersTokenRegistered[tx.origin] == 0 &&
-                uniqueOwner[tx.origin] == 0,
-                'UnbcNft: Already registered another token'
-                );
-        nfts[_tokenId].nonTransferable = true;
-        nfts[_tokenId].currentOwner = tx.origin;
-        nfts[_tokenId].ownerHistory.push(tx.origin);
-        usersTokenRegistered[tx.origin] = _tokenId;
+        uint256 _tokenId,
+        address _user
+    ) private returns(bool){
+        // require(ownerOf(_tokenId) == _user, 'UnbcNft: Only Token Owner');
+        // require(usersTokenRegistered[_user] == 0 &&
+        //         uniqueOwner[_user] == 0,
+        //         'UnbcNft: Already registered another token'
+        //         );
+        // nfts[_tokenId].nonTransferable = true;
+        nfts[_tokenId].currentOwner = _user;
+        nfts[_tokenId].ownerHistory.push(_user);
+        usersTokenRegistered[_user] = _tokenId;
         return true;
+    }
+
+    function getUserCitizenID(address _user) public view returns(uint256 citizenId){
+        citizenId = 0;
+        if (verifications[_user].isVerified) {
+            citizenId = uniqueOwner[_user];
+           } else if (usersTokenRegistered[_user] > 0) {
+            citizenId = usersTokenRegistered[_user];
+           }
     }
 
     function nftOwnerHistory(uint256 _tokenId) view public returns(address[] memory) {
@@ -129,6 +144,17 @@ contract UnbcNft is MRC721 {
     ) internal override {
         super._beforeTokenTransfer(from, to, tokenId);
         require(!nfts[tokenId].nonTransferable, 'This tokenId is not transferable');
+        if (usersTokenRegistered[from] == tokenId) {
+            uint256[] memory ids = super.tokensOfOwner(from);
+            if (ids.length > 0) {
+                usersTokenRegistered[from] = ids[0];
+            } else {
+                usersTokenRegistered[from] = 0;
+            }
+        }
+        if (getUserCitizenID(to) == 0) {
+            registerToken(tokenId, to);
+        }
     }
 
     function userHasAccessToken (
@@ -136,8 +162,9 @@ contract UnbcNft is MRC721 {
         uint256 _tokenId
     ) public view returns(bool) {
         if (
-            verifications[_user].isVerified &&
-            uniqueOwner[_user] == _tokenId
+            (verifications[_user].isVerified &&
+            uniqueOwner[_user] == _tokenId) ||
+            usersTokenRegistered[_user] == _tokenId
            ) {
             return true;
         } else {
@@ -145,11 +172,11 @@ contract UnbcNft is MRC721 {
         }
     }
 
-    function userHasRegisteredToken (
-        address _user,
-        uint256 _tokenId
-    ) public view returns(bool) {
-        return usersTokenRegistered[_user] == _tokenId;
-    }
+    // function userHasRegisteredToken (
+    //     address _user,
+    //     uint256 _tokenId
+    // ) public view returns(bool) {
+    //     return usersTokenRegistered[_user] == _tokenId;
+    // }
 
 }
