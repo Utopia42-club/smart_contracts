@@ -5,7 +5,7 @@ import "./MRC721.sol";
 import "./IBrightID.sol";
 // import "./MRC721Metadata.sol";
 
-contract UnbcNft is MRC721 {
+contract Utopia42CitizenID is MRC721 {
     address public signer;
     bytes32 public app;
 	uint256 public maxSupply = 4000;

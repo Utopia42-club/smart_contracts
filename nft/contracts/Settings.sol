@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./UnbcNft.sol";
+import "./Utopia42CitizenID.sol";
 
 
 contract Settings is AccessControl {
@@ -24,12 +24,12 @@ contract Settings is AccessControl {
     }
 
     modifier userHasAccess(uint256 _tokenId) {
-        require(UnbcNft(nftAddress).userHasAccessToken(msg.sender, _tokenId), 'Settings: !Authorized');
+        require(Utopia42CitizenID(nftAddress).userHasAccessToken(msg.sender, _tokenId), 'Settings: !Authorized');
         _;
     }
 
     // modifier userHasRegistered(uint256 _tokenId) {
-    //     require(UnbcNft(nftAddress).userHasRegisteredToken(msg.sender, _tokenId), 'Settings: !Authorized');
+    //     require(Utopia42CitizenID(nftAddress).userHasRegisteredToken(msg.sender, _tokenId), 'Settings: !Authorized');
     //     _;
     // }
 
@@ -88,7 +88,7 @@ contract Settings is AccessControl {
     function userInfo(address _user) view public returns(string[] memory ) {
         string[] memory setts = new string[](defaultSettings.length);
         // uint256 tokenId = userToken[_user];
-        uint256 tokenId = UnbcNft(nftAddress).getUserCitizenID(_user);
+        uint256 tokenId = Utopia42CitizenID(nftAddress).getUserCitizenID(_user);
         for (uint i = 0; i < defaultSettings.length; i++) {
             setts[i] = settings[tokenId][defaultSettings[i]];
         }
