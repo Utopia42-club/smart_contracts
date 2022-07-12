@@ -29,7 +29,7 @@ contract Utopia42CitizenIDMinter is Ownable {
   function mint(address _to, uint _count) public payable {
     require(mintEnabled, "!enabled");
     require(_count <= maxPerUser, "> maxPerUser");
-    require(_count+nftContract.totalSupply() <= maxCap, "> maxCap");
+    require(_count+nftContract.totalSupply() + 1 <= maxCap, "> maxCap");
     require(msg.value >= price(_count), "!value");
 
     _mint(_to, _count);
@@ -74,7 +74,7 @@ contract Utopia42CitizenIDMinter is Ownable {
 
   function _mint(address _to, uint _count) private{
     for(uint i = 0; i < _count; i++){
-      nftContract.mint(_to, nftContract.totalSupply());
+      nftContract.mint(_to, nftContract.totalSupply() + 1);
     }
   }
 
