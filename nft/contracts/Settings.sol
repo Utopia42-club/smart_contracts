@@ -5,18 +5,14 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./Utopia42CitizenID.sol";
 
 
+// TODO: rename to Utopia42Settings
 contract Settings is AccessControl {
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    string[] public defaultSettings = [
-        "avatar"
-    ];
-
     mapping(uint256 => mapping(string => string)) public settings;
-    mapping(address => uint256) public userToken;
 
-    address public nftAddress;
+    address public utopia42CitizenIDContract;
 
     modifier onlyAdmin {
         require(hasRole(ADMIN_ROLE, msg.sender), "Settings: !Admin");
@@ -24,75 +20,34 @@ contract Settings is AccessControl {
     }
 
     modifier userHasAccess(uint256 _tokenId) {
-        require(Utopia42CitizenID(nftAddress).userHasAccessToken(msg.sender, _tokenId), 'Settings: !Authorized');
+        require(Utopia42CitizenID(utopia42CitizenIDContract).getCitizenID(msg.sender) == _tokenId, 'Settings: !Authorized');
         _;
     }
 
-    // modifier userHasRegistered(uint256 _tokenId) {
-    //     require(Utopia42CitizenID(nftAddress).userHasRegisteredToken(msg.sender, _tokenId), 'Settings: !Authorized');
-    //     _;
-    // }
 
-    modifier checkKeys (string[] calldata keys) {
-        for (uint i = 0; i < keys.length; i++) {
-            bool includeDefault;
-            for (uint j = 0; j < defaultSettings.length; j++) {
-                if (keccak256(abi.encodePacked(keys[i])) == keccak256(abi.encodePacked(defaultSettings[j]))) {
-                    includeDefault = true;
-                }
-            }
-            require(includeDefault, 'Settings: Invalid Input');
-        }
-        _;
-    }
-
-    constructor (address _nftAddress) {
+    constructor (address _utopia42CitizenIDContract) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
-        nftAddress = _nftAddress;
+        utopia42CitizenIDContract = _utopia42CitizenIDContract;
     }
 
     function updateSettings(
         uint256 _tokenId,
         string[] calldata keys,
         string[] calldata values
-    ) public userHasAccess(_tokenId) checkKeys(keys) {
+    ) public userHasAccess(_tokenId) {
         require(keys.length == values.length, 'Settings: Invalid input length');
         for (uint i = 0; i < keys.length; i++) {
             settings[_tokenId][keys[i]] = values[i];
         }
-        userToken[msg.sender] = _tokenId;
-
     }
 
-    // function updateSettings(
-    //     uint256 _tokenId,
-    //     string[] calldata keys,
-    //     string[] calldata values
-    // ) public userHasRegistered(_tokenId) checkKeys(keys) {
-    //     require(keys.length == values.length, 'Settings: Invalid input length');
-    //     for (uint i = 0; i < keys.length; i++) {
-    //         settings[_tokenId][keys[i]] = values[i];
-    //     }
-    //     userToken[msg.sender] = _tokenId;
-    // }
-
-    function updateDefaultSettings(string[] memory _newDefaultSettings) public onlyAdmin {
-        defaultSettings = _newDefaultSettings;
-    }
-
-    function getDeafaultSettings() public view returns(string[] memory) {
-        return defaultSettings;
-    }
-
-    function userInfo(address _user) view public returns(string[] memory ) {
-        string[] memory setts = new string[](defaultSettings.length);
-        // uint256 tokenId = userToken[_user];
-        uint256 tokenId = Utopia42CitizenID(nftAddress).getUserCitizenID(_user);
-        for (uint i = 0; i < defaultSettings.length; i++) {
-            setts[i] = settings[tokenId][defaultSettings[i]];
+    function userInfo(address _user, string[] memory _items) view public returns(string[] memory ) {
+        string[] memory _settings = new string[](_items.length);
+        uint256 tokenId = Utopia42CitizenID(utopia42CitizenIDContract).getCitizenID(_user);
+        for (uint i = 0; i < _items.length; i++) {
+            _settings[i] = settings[tokenId][_items[i]];
         }
-        return setts;
+        return _settings;
     }
 }
-

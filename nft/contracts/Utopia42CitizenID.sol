@@ -2,35 +2,30 @@
 pragma solidity ^0.8.0;
 
 import "./MRC721.sol";
-import "./IBrightID.sol";
-// import "./MRC721Metadata.sol";
+import "./MRC721Metadata.sol";
 
-contract Utopia42CitizenID is MRC721 {
+contract Utopia42CitizenID is MRC721{
     address public signer;
     bytes32 public app;
-	uint256 public maxSupply = 4000;
 
-    struct Verification {
-        uint256 time;
+    struct NFTParam {
+        uint256 mintTime;
         bool isVerified;
+        uint256 verifyTime;
     }
-    struct Nft {
-        address[] ownerHistory;
-        address currentOwner;
-        bool nonTransferable;
-    }
-    mapping(address => Verification) public verifications;
-    mapping(uint256 => Nft) public nfts;
-    mapping(address => uint256) public uniqueOwner;
-    mapping(address => uint256) public usersTokenRegistered;
+
+    mapping(uint256 => NFTParam) public params;
+
+
+    mapping(address => uint256) public brightIDAddrs;
 
 	constructor(
         address _signer,
         bytes32 _app
     ) MRC721(
-    	"UNBC NFT",
-    	"UNBC",
-        "http://127.0.0.1:5000/"
+    	"Utopia42 Citizen ID",
+    	"U42ID",
+        "https://citizenid-api.utopia42.club/"
     ){
         signer = _signer;
         app = _app;
@@ -42,13 +37,11 @@ contract Utopia42CitizenID is MRC721 {
         address to,
         uint256 id
     ) internal virtual override {
-        require(id > 0, 'UnbcNft: Id should grater than 0');
-        if (
-            getUserCitizenID(to) == 0
-            ) {
-            registerToken(id, to);
-        }
-    	require(totalSupply() <= maxSupply, "> maxSupply");
+        require(id > 0, 'Utopia42CitizenID: id is 0');
+        // Each wallet can mint just one ID
+        require(getCitizenID(to) == 0, "Utopia42CitizenID: duplicate ID");
+
+        params[id].mintTime = block.timestamp;
     }
 
     function setBrightId(
@@ -59,10 +52,14 @@ contract Utopia42CitizenID is MRC721 {
         bytes32 r,
         bytes32 s
     ) public returns(bool) {
-        //TODO
-        //chech this condition
-        // require(verifications[addrs[0]].time < timestamp, "Newer verification registered before");
-        require(!verifications[addrs[0]].isVerified, "Registered before");
+        require(
+            brightIDAddrs[addrs[0]] == 0 || // do not have any ID yet
+            (
+                brightIDAddrs[addrs[0]] == _nftId &&
+                !params[_nftId].isVerified
+            ), // has an ID but not verified yet
+            "Already registered"
+        );
 
         bytes32 message = keccak256(abi.encodePacked(app, addrs, timestamp));
         address _signer = ecrecover(message, v, r, s);
@@ -73,68 +70,38 @@ contract Utopia42CitizenID is MRC721 {
             if (ownerOf(_nftId) == addrs[i]) {
                 isOwner = true;
             }
-            if (uniqueOwner[addrs[i]] > 0) {
-                require(uniqueOwner[addrs[i]] == _nftId, 'Already registered another ID');
-            }
+            require(
+                brightIDAddrs[addrs[i]] == 0 ||
+                brightIDAddrs[addrs[i]] == _nftId,
+                'Already registered another ID.'
+            );
         }
-        require(isOwner, 'Only nft owner');
+        require(isOwner, '!owner');
 
-        verifications[addrs[0]].time = timestamp;
-        verifications[addrs[0]].isVerified = true;
+        if(!params[_nftId].isVerified){
+            params[_nftId].isVerified = true;
+            params[_nftId].verifyTime = block.timestamp;
+        }
+
         for(uint i = 0; i < addrs.length; i++) {
-            uint256 tokenRegistered = usersTokenRegistered[addrs[i]];
-            if (tokenRegistered != 0) {
-                nfts[tokenRegistered].nonTransferable = false;
-                nfts[tokenRegistered].currentOwner = address(0);
-            }
-            delete usersTokenRegistered[addrs[i]];
-            uniqueOwner[addrs[i]] = _nftId;
-            if (i == 0) continue;
-            verifications[addrs[i]].time = timestamp;
-            verifications[addrs[i]].isVerified = false;
+            brightIDAddrs[addrs[i]] = _nftId;
         }
 
-        if (ownerOf(_nftId) != addrs[0]) {
-            nfts[_nftId].nonTransferable = false;
+        if(ownerOf(_nftId) != addrs[0]) {
             _transfer(ownerOf(_nftId), addrs[0], _nftId);
         }
-        nfts[_nftId].nonTransferable = true;
-        nfts[_nftId].currentOwner = addrs[0];
-        nfts[_nftId].ownerHistory.push(addrs[0]);
         return true;
     }
 
-    function registerToken(
-        uint256 _tokenId,
-        address _user
-    ) private returns(bool){
-        // require(ownerOf(_tokenId) == _user, 'UnbcNft: Only Token Owner');
-        // require(usersTokenRegistered[_user] == 0 &&
-        //         uniqueOwner[_user] == 0,
-        //         'UnbcNft: Already registered another token'
-        //         );
-        // nfts[_tokenId].nonTransferable = true;
-        nfts[_tokenId].currentOwner = _user;
-        nfts[_tokenId].ownerHistory.push(_user);
-        usersTokenRegistered[_user] = _tokenId;
-        return true;
-    }
-
-    function getUserCitizenID(address _user) public view returns(uint256 citizenId){
-        citizenId = 0;
-        if (verifications[_user].isVerified) {
-            citizenId = uniqueOwner[_user];
-           } else if (usersTokenRegistered[_user] > 0) {
-            citizenId = usersTokenRegistered[_user];
-           }
-    }
-
-    function nftOwnerHistory(uint256 _tokenId) view public returns(address[] memory) {
-        address[] memory owners = new address[](nfts[_tokenId].ownerHistory.length);
-        for (uint i = 0; i < nfts[_tokenId].ownerHistory.length; i++) {
-            owners[i] = nfts[_tokenId].ownerHistory[i];
+    function getCitizenID(address _user) public view returns(uint256 citizenId){
+        if(brightIDAddrs[_user] != 0){
+            return brightIDAddrs[_user];
         }
-        return owners;
+        uint256[] memory ids = super.tokensOfOwner(_user);
+        if(ids.length > 0){
+            return ids[0];
+        }
+        return 0;
     }
 
     function _beforeTokenTransfer(
@@ -142,41 +109,14 @@ contract Utopia42CitizenID is MRC721 {
         address to,
         uint256 tokenId
     ) internal override {
+        require(
+            !params[tokenId].isVerified,
+            'Not transferable');
+        require(
+            getCitizenID(to) == 0, 
+            "To alreay has an ID"
+        );
         super._beforeTokenTransfer(from, to, tokenId);
-        require(!nfts[tokenId].nonTransferable, 'This tokenId is not transferable');
-        if (usersTokenRegistered[from] == tokenId) {
-            uint256[] memory ids = super.tokensOfOwner(from);
-            if (ids.length > 0) {
-                usersTokenRegistered[from] = ids[0];
-            } else {
-                usersTokenRegistered[from] = 0;
-            }
-        }
-        if (getUserCitizenID(to) == 0) {
-            registerToken(tokenId, to);
-        }
     }
-
-    function userHasAccessToken (
-        address _user,
-        uint256 _tokenId
-    ) public view returns(bool) {
-        if (
-            (verifications[_user].isVerified &&
-            uniqueOwner[_user] == _tokenId) ||
-            usersTokenRegistered[_user] == _tokenId
-           ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    // function userHasRegisteredToken (
-    //     address _user,
-    //     uint256 _tokenId
-    // ) public view returns(bool) {
-    //     return usersTokenRegistered[_user] == _tokenId;
-    // }
 
 }
