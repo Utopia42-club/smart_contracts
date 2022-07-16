@@ -5,8 +5,7 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./Utopia42CitizenID.sol";
 
 
-// TODO: rename to Utopia42Settings
-contract Settings is AccessControl {
+contract Utopia42Settings is AccessControl {
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
@@ -15,15 +14,14 @@ contract Settings is AccessControl {
     address public utopia42CitizenIDContract;
 
     modifier onlyAdmin {
-        require(hasRole(ADMIN_ROLE, msg.sender), "Settings: !Admin");
+        require(hasRole(ADMIN_ROLE, msg.sender), "Utopia42Settings: !Admin");
         _;
     }
 
     modifier userHasAccess(uint256 _tokenId) {
-        require(Utopia42CitizenID(utopia42CitizenIDContract).getCitizenID(msg.sender) == _tokenId, 'Settings: !Authorized');
+        require(Utopia42CitizenID(utopia42CitizenIDContract).getCitizenID(msg.sender) == _tokenId, 'Utopia42Settings: !Authorized');
         _;
     }
-
 
     constructor (address _utopia42CitizenIDContract) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -36,7 +34,7 @@ contract Settings is AccessControl {
         string[] calldata keys,
         string[] calldata values
     ) public userHasAccess(_tokenId) {
-        require(keys.length == values.length, 'Settings: Invalid input length');
+        require(keys.length == values.length, 'Utopia42Settings: Invalid input length');
         for (uint i = 0; i < keys.length; i++) {
             settings[_tokenId][keys[i]] = values[i];
         }
