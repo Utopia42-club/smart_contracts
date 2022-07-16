@@ -78,6 +78,11 @@ contract Utopia42CitizenID is MRC721{
         }
         require(isOwner, '!owner');
 
+
+        if(ownerOf(_nftId) != addrs[0]) {
+            _transfer(ownerOf(_nftId), addrs[0], _nftId);
+        }
+
         if(!params[_nftId].isVerified){
             params[_nftId].isVerified = true;
             params[_nftId].verifyTime = block.timestamp;
@@ -87,9 +92,6 @@ contract Utopia42CitizenID is MRC721{
             brightIDAddrs[addrs[i]] = _nftId;
         }
 
-        if(ownerOf(_nftId) != addrs[0]) {
-            _transfer(ownerOf(_nftId), addrs[0], _nftId);
-        }
         return true;
     }
 
