@@ -51,7 +51,6 @@ contract Utopia42Verse is AccessControl{
     // land owners can convert lands to NFTs after
     // some time.
     // It will allow us to find and resolve the conflicts
-    uint256 public landToNFTMinDelay = 0;
 
     address public nftContract;
 
@@ -248,7 +247,7 @@ contract Utopia42Verse is AccessControl{
 
     function landToNFT(uint256 landId) public{
 
-        require(block.timestamp - lands[landId].time >= landToNFTMinDelay, "delay < minDelay");
+        require(block.timestamp - lands[landId].time >= Utopia42Controller(controllerAddress).landToNFTMinDelay(), "delay < minDelay");
 
         require(landToNFTEnabled || hasRole(NFT_ROLE, msg.sender), "landToNFTEnabled !enabled");
         require(lands[landId].owner == msg.sender || hasRole(NFT_ROLE, msg.sender), "!owner");
@@ -286,9 +285,6 @@ contract Utopia42Verse is AccessControl{
         landToNFTEnabled = val;
     }
 
-    function adminSetLandToNFTMinDelay(uint256 val) public onlyUtopia42DAO{
-        landToNFTMinDelay = val;
-    }
 
     function landPrice(int256 x1,
         int256 x2, int256 y1, int256 y2)

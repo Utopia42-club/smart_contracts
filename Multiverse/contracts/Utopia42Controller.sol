@@ -13,6 +13,7 @@ contract Utopia42Controller is AccessControl{
     address public DAOWallet;
     uint256 public defaultUnitLandPrice = .0001 ether;
     uint256 public defaultTransferLandFee = .00001 ether;
+    uint256 public landToNFTMinDelay;
     string public baseTokenURI = "https://nft-api.utopia42.club/";
 
     constructor (
@@ -38,6 +39,10 @@ contract Utopia42Controller is AccessControl{
 
     function setTransferLandFee(uint256 _fee) public onlyAdmin {
         defaultTransferLandFee = _fee;
+    }
+
+    function setLandToNFTMinDelay(uint256 _delay) public onlyAdmin {
+        landToNFTMinDelay = _delay;
     }
 
     function setBaseTokenUri(string calldata _uri) public onlyAdmin {
