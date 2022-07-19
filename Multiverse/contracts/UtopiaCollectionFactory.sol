@@ -9,7 +9,7 @@ contract UtopiaCollectionFactory is AccessControl{
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 constant public UTOPIA_FACTORY_ROLE = keccak256("UTOPIA_FACTORY_ROLE");
-    address public utopiaFactoryAddress;
+    address public utopia42VerseFactoryAddress;
     address public controllerAddress;
 
     event CollectionCreated(address owner, address creator, uint256 time, address verseAddress, address collectionAddress);
@@ -20,7 +20,7 @@ contract UtopiaCollectionFactory is AccessControl{
     }
 
     modifier onlyUtopia {
-        require(hasRole(UTOPIA_FACTORY_ROLE, msg.sender), "!admin");
+        require(hasRole(UTOPIA_FACTORY_ROLE, msg.sender), "!UTOPIA_VERSE_FACTORY");
         _;
     }
 
@@ -31,7 +31,7 @@ contract UtopiaCollectionFactory is AccessControl{
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
         _setupRole(UTOPIA_FACTORY_ROLE, _utopiaFactory);
-        utopiaFactoryAddress = _utopiaFactory;
+        utopia42VerseFactoryAddress = _utopiaFactory;
     }
 
 
@@ -55,7 +55,7 @@ contract UtopiaCollectionFactory is AccessControl{
     }
 
     function setUtopiaFactoryAddress(address _newAddress) public onlyAdmin {
-        utopiaFactoryAddress = _newAddress;
+        utopia42VerseFactoryAddress = _newAddress;
         _setupRole(UTOPIA_FACTORY_ROLE, _newAddress);
     }
 

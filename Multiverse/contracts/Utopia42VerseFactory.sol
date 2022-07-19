@@ -49,7 +49,7 @@ contract Utopia42VerseFactory is AccessControl {
         );
         require(msg.value >= verseCreationFee, 'Insufficient Value');
 
-        verse = address(new Utopia(
+        verse = address(new Utopia42Verse(
             _owner,
             controllerAddress,
             publicAssignEnabled,
