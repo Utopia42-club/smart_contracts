@@ -3,6 +3,7 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import "./Utopia42Controller.sol";
 
 interface IUtpoiaNFT{
   function burn(uint256 nftId) external;
@@ -12,10 +13,12 @@ interface IUtpoiaNFT{
 contract Utopia is AccessControl{
     using ECDSA for bytes32;
 
-    bytes32 constant public ADMIN_ROLE = keccak256("ADMIN ROLE");
+    bytes32 constant public VERSE_ADMIN_ROLE = keccak256("VERSE ADMIN ROLE");
     bytes32 constant public NFT_ROLE = keccak256("NFT ROLE");
     bytes32 constant public BURN_ROLE = keccak256("BURN ROLE");
-    bytes32 constant public CONFLICT_ROLE = keccak256("CONFLICT ROLE");
+    bytes32 constant public CONFLICT_FREE_ROLE = keccak256("CONFLICT FREE ROLE");
+    bytes32 constant public UTOPIA42DAO_ROLE = keccak256("UTOPIA42DAO ROLE");
+
 
     struct Land{
         uint256 id; // unique ID
@@ -35,15 +38,14 @@ contract Utopia is AccessControl{
     //landId => Land
     mapping(uint256 => Land) public lands;
 
-    bool public publicAssignEnabled = true;
+    address public controllerAddress;
+    //TODO: move to constructor
+    //Done
+    bool public publicAssignEnabled;
+
     bool public assignLandWithoutSigEnabled = false;
     bool public landToNFTEnabled = true;
-
-    // all funds goes to the DAO wallet and will be managed 
-    // by the DAO
-    address payable public DAOWallet = payable(msg.sender);
-
-    uint256 public unitLandPrice = 0.0001 ether;
+    string public verseName;
 
     uint256 public lastLandId = 0;
 
@@ -60,8 +62,15 @@ contract Utopia is AccessControl{
     event LandUpdate(uint256 landId, string hash);
     event LandTransfer(uint256 landId, address from, address to);
 
-    modifier onlyAdmin {
-        require(hasRole(ADMIN_ROLE, msg.sender), "!admin");
+    // TODO: who is admin?
+    //Done
+    modifier verseAdminRole {
+        require(hasRole(VERSE_ADMIN_ROLE, msg.sender), "!verse admin");
+        _;
+    }
+
+    modifier onlyUtopia42DAO {
+        require(hasRole(UTOPIA42DAO_ROLE, msg.sender), "!Utopia42DAO");
         _;
     }
 
@@ -80,9 +89,17 @@ contract Utopia is AccessControl{
         _;
     }
 
-    constructor(address _owner){
+    constructor(
+        address _owner,
+        address _controller,
+        bool _publicAssignEnabled,
+        string memory _verseName
+        ){
         _setupRole(DEFAULT_ADMIN_ROLE, _owner);
-        _setupRole(ADMIN_ROLE, _owner);
+        _setupRole(VERSE_ADMIN_ROLE, _owner);
+        publicAssignEnabled = _publicAssignEnabled;
+        controllerAddress = _controller;
+        verseName = _verseName;
     }
 
 
@@ -95,8 +112,12 @@ contract Utopia is AccessControl{
         return true;
     }
 
-    function transferLand(uint256 landId, address _to) public{
+    //TODO: set a cost for land transfer
+    // and read from controller
+    // Done
+    function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
+        require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(), 'Utopia: insufficient fee');
         transferLandInternal(landId, _to, msg.sender);
     }
 
@@ -155,7 +176,7 @@ contract Utopia is AccessControl{
 
     function adminAssignLand(int256 x1,
         int256 x2, int256 y1, int256 y2, address addr, string memory hash)
-        public onlyAdmin{
+        public verseAdminRole{
 
         assignLandInternal(x1, x2, y1, y2, addr, hash);
     }
@@ -164,31 +185,48 @@ contract Utopia is AccessControl{
         int256 x2, int256 y1, int256 y2, string memory hash)
                 isPublic public payable{
         require(assignLandWithoutSigEnabled, "requires sig");
-        uint256 cost = abs(x2-x1) * abs(y2-y1) * unitLandPrice;
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
         require(msg.value >= cost, "value < price");
 
-        DAOWallet.transfer(msg.value);
+        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
+    }
+
+    function assignLandConflictFreeFor(int256 x1,
+        int256 x2, int256 y1, int256 y2, string memory hash,
+        uint lastLandChecked, address forAddress) public payable{
+
+        require(hasRole(CONFLICT_FREE_ROLE, forAddress), "!sig");
+
+        require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
+
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
+        require(msg.value >= cost, "value < price");
+
+        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
+
+        assignLandInternal(x1, x2, y1, y2, forAddress, hash);
     }
 
     function assignLandConflictFree(int256 x1,
         int256 x2, int256 y1, int256 y2, string memory hash,
         uint lastLandChecked, bytes calldata sig
     ) isPublic public payable{
+
         bytes32 sigHash = keccak256(abi.encodePacked(
             x1, x2, y1, y2, lastLandChecked
         ));
         sigHash = sigHash.toEthSignedMessageHash();
         address signer = sigHash.recover(sig);
-        require(hasRole(CONFLICT_ROLE, signer), "!sig");
+        require(hasRole(CONFLICT_FREE_ROLE, signer), "!sig");
 
         require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
 
-        uint256 cost = abs(x2-x1) * abs(y2-y1) * unitLandPrice;
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
         require(msg.value >= cost, "value < price");
 
-        DAOWallet.transfer(msg.value);
+        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
@@ -232,38 +270,34 @@ contract Utopia is AccessControl{
         IUtpoiaNFT(nftContract).burn(landId);
     }
 
-    function adminSetIsPublic(bool val) onlyAdmin public{
+    function adminSetIsPublic(bool val) verseAdminRole public{
         publicAssignEnabled = val;
     }
 
-    function adminSetUnitLandPrice(uint256 price) onlyAdmin public{
-        unitLandPrice = price;
+    function adminSetVerseName(string memory _newName) verseAdminRole public{
+        verseName = _newName;
     }
 
-    function adminSetDAOWallet(address payable _DAOWallet) onlyAdmin public{
-        DAOWallet = _DAOWallet;
-    }
-
-    function adminSetNFTContract(address addr) onlyAdmin public{
+    function adminSetNFTContract(address addr) public onlyUtopia42DAO {
         nftContract = addr;
     }
 
-    function adminEnableWithoutSig(bool val) public onlyAdmin{
+    function adminEnableWithoutSig(bool val) public onlyUtopia42DAO{
         assignLandWithoutSigEnabled = val;
     }
 
-    function adminEnableLandToNFT(bool val) public onlyAdmin{
+    function adminEnableLandToNFT(bool val) public onlyUtopia42DAO{
         landToNFTEnabled = val;
     }
 
-    function adminSetLandToNFTMinDelay(uint256 val) public onlyAdmin{
+    function adminSetLandToNFTMinDelay(uint256 val) public onlyUtopia42DAO{
         landToNFTMinDelay = val;
     }
 
-    function landPrice(int256 x1, 
+    function landPrice(int256 x1,
         int256 x2, int256 y1, int256 y2)
                 view public returns(uint256){
-        return abs(x2-x1) * abs(y2-y1) * unitLandPrice;
+        return abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
     }
 
     function abs(int256 x) pure public returns (uint256) {

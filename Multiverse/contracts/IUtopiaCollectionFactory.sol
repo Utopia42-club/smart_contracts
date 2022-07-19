@@ -6,7 +6,9 @@ interface IUtopiaCollectionFactory {
     function createCollection (
         address _owner,
         address _verse,
-        address _creator
+        address _creator,
+        address _controller,
+        string memory _verseName
         ) external returns(
         address collection
     );

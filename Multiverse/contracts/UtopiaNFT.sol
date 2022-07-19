@@ -1,37 +1,55 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./MRC721.sol";
+import "./Utopia42Controller.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 
 interface IUtopia{
     function transferNFTLand(uint256 tokenId, address to) external;
 }
 
-contract UtopiaNFT is ERC721Enumerable, Ownable{
-    string public _baseTokenURI = "https://nft-api.utopia42.club/";
-    address public utopiaContract;
+// TODO: Let's use MRC721
+//Done
 
-    modifier onlyUtopia(){
-        require(msg.sender == utopiaContract, "!utopia");
+// TODO: Who is owner of the contract? Utopia or verse owner?
+// owner should be utopia admins. Because we want to set 
+// fees on opensea
+contract UtopiaNFT is MRC721{
+
+    //TODO: call this from controller
+    //?
+    address public verseContract;
+    address public controllerAddress;
+    bytes32 constant public Utopia42DAO_ROLE = keccak256("Utopia42DAO_ROLE");
+    // TODO: Let's call this Utopia42Verse
+    // Done
+    // Utopia42Verse ---> verse contract
+    // Utopia42DAO ---> Utopia DAO wallet(admins)
+    modifier onlyUtopia42DAO(){
+        require(hasRole(Utopia42DAO_ROLE, msg.sender), "!Utopia42DAO");
         _;
     }
 
+
     constructor (
-        address _utopia,
-        address _owner
-        ) ERC721("Utopia42 Lands", "UL42") {
-        utopiaContract = _utopia;
-        transferOwnership(_owner);
-    }
-
-
-    function mint(address to, uint256 id) external onlyUtopia{
-        _mint(to, id);
-    }
-
-    function burn(uint256 id) external onlyUtopia{
-        _burn(id);
+        address _verseAddress,
+        address _owner,
+        address _controller,
+        string memory _verseName
+        //TODO: Name should be different for each verse
+        // Done
+        ) MRC721(
+            string(abi.encodePacked("Utopia42 Lands ", _verseName)),
+            "UL42",
+            Utopia42Controller(_controller).baseTokenURI()
+            ) {
+        controllerAddress = _controller;
+        _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
+        _setupRole(Utopia42DAO_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
+    	_setupRole(MINTER_ROLE, _verseAddress);
+    	_setupRole(BURNER_ROLE, _verseAddress);
+        verseContract = _verseAddress;
     }
 
     function _beforeTokenTransfer(
@@ -43,15 +61,22 @@ contract UtopiaNFT is ERC721Enumerable, Ownable{
 
         if (from != address(0) && to != address(0)) {
             // transfer land ownership on Utopia
-            IUtopia(utopiaContract).transferNFTLand(tokenId, to);
+            IUtopia(verseContract).transferNFTLand(tokenId, to);
         }
     }
 
-    function updateUtopiaContract(address _addr) public onlyOwner{
-        utopiaContract = _addr;
+    function updateUtopiaContract(address _addr) public onlyUtopia42DAO {
+        verseContract = _addr;
     }
 
+    // TODO: base url should be _baseTokenURI + verseContract
+    //Done
     function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
+        return string(abi.encodePacked(
+                Utopia42Controller(controllerAddress).baseTokenURI(),
+                Strings(address(this))
+            )
+        );
     }
+
 }

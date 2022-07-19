@@ -10,6 +10,7 @@ contract UtopiaCollectionFactory is AccessControl{
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 constant public UTOPIA_FACTORY_ROLE = keccak256("UTOPIA_FACTORY_ROLE");
     address public utopiaFactoryAddress;
+    address public controllerAddress;
 
     event CollectionCreated(address owner, address creator, uint256 time, address verseAddress, address collectionAddress);
 
@@ -24,7 +25,8 @@ contract UtopiaCollectionFactory is AccessControl{
     }
 
     constructor(
-        address _utopiaFactory
+        address _utopiaFactory,
+        address _controllerAddress
     ){
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
@@ -36,14 +38,18 @@ contract UtopiaCollectionFactory is AccessControl{
     function createCollection (
         address _owner,
         address _verse,
-        address _creator
+        address _creator,
+        address _controller,
+        string memory _verseName
         ) public onlyUtopia returns(
         address collection
     ){
 
         collection = address(new UtopiaNFT(
             _verse,
-            _owner
+            _owner,
+            _controller,
+            _verseName
         ));
         emit CollectionCreated(_owner, _creator, block.timestamp, _verse, collection);
     }
