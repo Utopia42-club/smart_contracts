@@ -39,8 +39,7 @@ contract Utopia42Verse is AccessControl{
     mapping(uint256 => Land) public lands;
 
     address public controllerAddress;
-    //TODO: move to constructor
-    //Done
+
     bool public publicAssignEnabled;
 
     bool public assignLandWithoutSigEnabled = false;
@@ -62,8 +61,7 @@ contract Utopia42Verse is AccessControl{
     event LandUpdate(uint256 landId, string hash);
     event LandTransfer(uint256 landId, address from, address to);
 
-    // TODO: who is admin?
-    //Done
+
     modifier verseAdminRole {
         require(hasRole(VERSE_ADMIN_ROLE, msg.sender), "!verse admin");
         _;
@@ -112,9 +110,6 @@ contract Utopia42Verse is AccessControl{
         return true;
     }
 
-    //TODO: set a cost for land transfer
-    // and read from controller
-    // Done
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
         require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(address(this)), 'Utopia42Verse: insufficient fee');

@@ -25,8 +25,7 @@ contract UtopiaCollectionFactory is AccessControl{
     }
 
     constructor(
-        address _utopiaFactory,
-        address _controllerAddress
+        address _utopiaFactory
     ){
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(ADMIN_ROLE, msg.sender);
@@ -47,7 +46,6 @@ contract UtopiaCollectionFactory is AccessControl{
 
         collection = address(new UtopiaNFT(
             _verse,
-            _owner,
             _controller,
             _verseName
         ));

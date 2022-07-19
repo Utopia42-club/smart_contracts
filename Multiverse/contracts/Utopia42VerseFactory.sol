@@ -6,19 +6,13 @@ import "./IUtopiaCollectionFactory.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-//TODO: rename to Utopia42VerseFactory
-// and rename Utopia.sol to Utopia42Verse
+
 contract Utopia42VerseFactory is AccessControl {
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public collectionFactory;
-
     uint256 public verseCreationFee = 0.001 ether;
     address public controllerAddress;
-
-
-    // TODO: add admin setter function
-    //Done
     bool public isPublic = false;
 
     event VerseCreated(address owner, address creator, uint256 time, address verseAddress, address collectionAddress);

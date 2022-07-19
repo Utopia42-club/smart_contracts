@@ -10,36 +10,22 @@ interface IUtopiaVerse42{
     function transferNFTLand(uint256 tokenId, address to) external;
 }
 
-// TODO: Let's use MRC721
-//Done
 
-// TODO: Who is owner of the contract? Utopia or verse owner?
-// owner should be utopia admins. Because we want to set 
-// fees on opensea
 contract UtopiaNFT is MRC721, Ownable{
 
-    //TODO: call this from controller
-    //?
     address public verseContract;
     address public controllerAddress;
     bytes32 constant public Utopia42DAO_ROLE = keccak256("Utopia42DAO_ROLE");
-    // TODO: Let's call this Utopia42Verse
-    // Done
-    // Utopia42Verse ---> verse contract
-    // Utopia42DAO ---> Utopia DAO wallet(admins)
+
     modifier onlyUtopia42DAO(){
         require(hasRole(Utopia42DAO_ROLE, msg.sender), "!Utopia42DAO");
         _;
     }
 
-
     constructor (
         address _verseAddress,
-        address _owner,
         address _controller,
         string memory _verseName
-        //TODO: Name should be different for each verse
-        // Done
         ) MRC721(
             string(abi.encodePacked("Utopia42 Lands ", _verseName)),
             "UL42",
@@ -71,8 +57,6 @@ contract UtopiaNFT is MRC721, Ownable{
         verseContract = _addr;
     }
 
-    // TODO: base url should be _baseTokenURI + verseContract
-    //Done
     function _baseURI() internal view virtual override returns (string memory) {
         return string(abi.encodePacked(
                 Utopia42Controller(controllerAddress).baseTokenURI(),
