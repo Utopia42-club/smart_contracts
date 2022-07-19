@@ -4,8 +4,9 @@ pragma solidity ^0.8.10;
 import "./MRC721.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IUtopia{
+interface IUtopiaVerse42{
     function transferNFTLand(uint256 tokenId, address to) external;
 }
 
@@ -15,7 +16,7 @@ interface IUtopia{
 // TODO: Who is owner of the contract? Utopia or verse owner?
 // owner should be utopia admins. Because we want to set 
 // fees on opensea
-contract UtopiaNFT is MRC721{
+contract UtopiaNFT is MRC721, Ownable{
 
     //TODO: call this from controller
     //?
@@ -47,6 +48,7 @@ contract UtopiaNFT is MRC721{
         controllerAddress = _controller;
         _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
         _setupRole(Utopia42DAO_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
+        transferOwnership(Utopia42Controller(controllerAddress).DAOWallet());
     	_setupRole(MINTER_ROLE, _verseAddress);
     	_setupRole(BURNER_ROLE, _verseAddress);
         verseContract = _verseAddress;
@@ -61,7 +63,7 @@ contract UtopiaNFT is MRC721{
 
         if (from != address(0) && to != address(0)) {
             // transfer land ownership on Utopia
-            IUtopia(verseContract).transferNFTLand(tokenId, to);
+            IUtopiaVerse42(verseContract).transferNFTLand(tokenId, to);
         }
     }
 
