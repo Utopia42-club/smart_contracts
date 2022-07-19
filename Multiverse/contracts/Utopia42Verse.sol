@@ -10,7 +10,7 @@ interface IUtpoiaNFT{
   function mint(address sender, uint256 nftId) external;
 }
 
-contract Utopia is AccessControl{
+contract Utopia42Verse is AccessControl{
     using ECDSA for bytes32;
 
     bytes32 constant public VERSE_ADMIN_ROLE = keccak256("VERSE ADMIN ROLE");
@@ -117,7 +117,7 @@ contract Utopia is AccessControl{
     // Done
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
-        require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(), 'Utopia: insufficient fee');
+        require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(), 'Utopia42Verse: insufficient fee');
         transferLandInternal(landId, _to, msg.sender);
     }
 

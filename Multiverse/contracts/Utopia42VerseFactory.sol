@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.10;
 
-import "./Utopia.sol";
+import "./Utopia42Verse.sol";
 import "./IUtopiaCollectionFactory.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //TODO: rename to Utopia42VerseFactory
 // and rename Utopia.sol to Utopia42Verse
-contract UtopiaFactory is AccessControl {
+contract Utopia42VerseFactory is AccessControl {
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public collectionFactory;
