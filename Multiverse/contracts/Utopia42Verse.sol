@@ -117,7 +117,7 @@ contract Utopia42Verse is AccessControl{
     // Done
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
-        require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(), 'Utopia42Verse: insufficient fee');
+        require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(address(this)), 'Utopia42Verse: insufficient fee');
         transferLandInternal(landId, _to, msg.sender);
     }
 
@@ -185,7 +185,7 @@ contract Utopia42Verse is AccessControl{
         int256 x2, int256 y1, int256 y2, string memory hash)
                 isPublic public payable{
         require(assignLandWithoutSigEnabled, "requires sig");
-        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
         payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
@@ -201,7 +201,7 @@ contract Utopia42Verse is AccessControl{
 
         require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
 
-        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
         payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
@@ -223,7 +223,7 @@ contract Utopia42Verse is AccessControl{
 
         require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
 
-        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
+        uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
         payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
@@ -297,7 +297,7 @@ contract Utopia42Verse is AccessControl{
     function landPrice(int256 x1,
         int256 x2, int256 y1, int256 y2)
                 view public returns(uint256){
-        return abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice();
+        return abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
     }
 
     function abs(int256 x) pure public returns (uint256) {

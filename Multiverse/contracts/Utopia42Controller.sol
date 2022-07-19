@@ -7,9 +7,12 @@ contract Utopia42Controller is AccessControl{
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN ROLE");
 
+    mapping(address => uint256) versesUnitLandsPrice;
+    mapping(address => uint256) versesTransferLandFees;
+
     address public DAOWallet;
-    uint256 public unitLandPrice = .0001 ether;
-    uint256 public transferLandFee = .00001 ether;
+    uint256 public defaultUnitLandPrice = .0001 ether;
+    uint256 public defaultTransferLandFee = .00001 ether;
     string public baseTokenURI = "https://nft-api.utopia42.club/";
 
     constructor (
@@ -30,15 +33,35 @@ contract Utopia42Controller is AccessControl{
     }
 
     function setUintLandPrice(uint256 _price) public onlyAdmin {
-        unitLandPrice = _price;
+        defaultUnitLandPrice = _price;
     }
 
     function setTransferLandFee(uint256 _fee) public onlyAdmin {
-        transferLandFee = _fee;
+        defaultTransferLandFee = _fee;
     }
 
     function setBaseTokenUri(string calldata _uri) public onlyAdmin {
         baseTokenURI = _uri;
+    }
+
+    function setUnitLandPriceForVerse(address _verseAddress, uint256 _price) public onlyAdmin {
+        versesUnitLandsPrice[_verseAddress] = _price;
+    }
+
+    function setTransferLandFeeForVerse(address _verseAddress, uint256 _price) public onlyAdmin {
+        versesTransferLandFees[_verseAddress] = _price;
+    }
+
+    function unitLandPrice(address _verseAddress) public view returns(uint256 _unitLandPrice) {
+        _unitLandPrice = versesUnitLandsPrice[_verseAddress] == 0 ?
+                         defaultUnitLandPrice :
+                         versesUnitLandsPrice[_verseAddress];
+    }
+
+    function transferLandFee(address _verseAddress) public view returns(uint256 _transferLandPrice) {
+        _transferLandPrice = versesTransferLandFees[_verseAddress] == 0 ?
+                             defaultTransferLandFee :
+                             versesTransferLandFees[_verseAddress];
     }
 
 }
