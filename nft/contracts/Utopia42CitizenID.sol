@@ -5,6 +5,7 @@ import "./MRC721.sol";
 import "./MRC721Metadata.sol";
 
 contract Utopia42CitizenID is MRC721{
+    bytes32 constant public ADMIN_ROLE = keccak256("ADMIN ROLE");
     address public signer;
     bytes32 public app;
 
@@ -18,19 +19,27 @@ contract Utopia42CitizenID is MRC721{
 
 
     mapping(address => uint256) public brightIDAddrs;
+    mapping(address => bool) public citizenIDTransferWhitelist;
 
-	constructor(
+    modifier onlyAdmin {
+        require(hasRole(ADMIN_ROLE, msg.sender), "!Only Admin");
+        _;
+    }
+
+    constructor(
         address _signer,
         bytes32 _app
     ) MRC721(
-    	"Utopia42 Citizen ID",
-    	"U42ID",
+        "Utopia42 Citizen ID",
+        "U42ID",
         "https://citizenid-api.utopia42.club/"
     ){
         signer = _signer;
         app = _app;
-    	_setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    	_setupRole(MINTER_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(ADMIN_ROLE, msg.sender);
+        _setupRole(MINTER_ROLE, msg.sender);
+        citizenIDTransferWhitelist[address(0)] = true;
     }
 
     function _beforeMint(
@@ -112,13 +121,22 @@ contract Utopia42CitizenID is MRC721{
         uint256 tokenId
     ) internal override {
         require(
-            !params[tokenId].isVerified,
-            'Not transferable');
+            (
+                !params[tokenId].isVerified &&
+                brightIDAddrs[to] != tokenId
+            ) ||
+            citizenIDTransferWhitelist[to],
+            'Not transferable'
+        );
         require(
-            getCitizenID(to) == 0, 
+            getCitizenID(to) == 0,
             "To alreay has an ID"
         );
         super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    function setCitizenIDTransferWhitelist(address _user, bool _inWhitelist) public onlyAdmin {
+        citizenIDTransferWhitelist[_user] = _inWhitelist;
     }
 
 }
