@@ -52,6 +52,7 @@ contract Utopia42VerseFactory is AccessControl {
         address collection = IUtopiaCollectionFactory(collectionFactory).createCollection(
             _owner, verse, msg.sender, controllerAddress, verseName
         );
+        Utopia42Verse(verse).adminSetNFTContract(collection);
         emit VerseCreated(_owner, msg.sender, block.timestamp, verse, collection);
     }
 

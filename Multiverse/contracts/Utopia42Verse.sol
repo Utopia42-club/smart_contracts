@@ -18,6 +18,7 @@ contract Utopia42Verse is AccessControl{
     bytes32 constant public BURN_ROLE = keccak256("BURN ROLE");
     bytes32 constant public CONFLICT_FREE_ROLE = keccak256("CONFLICT FREE ROLE");
     bytes32 constant public UTOPIA42DAO_ROLE = keccak256("UTOPIA42DAO ROLE");
+    bytes32 constant public VERSE_FACTORY_ROLE = keccak256("VERSE FACTORY ROLE");
 
 
     struct Land{
@@ -71,6 +72,14 @@ contract Utopia42Verse is AccessControl{
         _;
     }
 
+    modifier onlyUtopia42DAOOrVerseFactory {
+        require(
+            hasRole(UTOPIA42DAO_ROLE, msg.sender) ||
+            hasRole(VERSE_FACTORY_ROLE, msg.sender),
+            "!Utopia42DAO Or Verse Factory");
+        _;
+    }
+
     modifier onlyNFT {
         require(hasRole(NFT_ROLE, msg.sender), "!nft");
         _;
@@ -95,6 +104,7 @@ contract Utopia42Verse is AccessControl{
         _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(_controller).DAOWallet());
         _setupRole(UTOPIA42DAO_ROLE, Utopia42Controller(_controller).DAOWallet());
         _setupRole(VERSE_ADMIN_ROLE, _owner);
+        _setupRole(VERSE_FACTORY_ROLE, msg.sender);
         publicAssignEnabled = _publicAssignEnabled;
         controllerAddress = _controller;
         verseName = _verseName;
@@ -273,7 +283,7 @@ contract Utopia42Verse is AccessControl{
         verseName = _newName;
     }
 
-    function adminSetNFTContract(address addr) public onlyUtopia42DAO {
+    function adminSetNFTContract(address addr) public onlyUtopia42DAOOrVerseFactory {
         nftContract = addr;
     }
 

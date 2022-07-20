@@ -7,9 +7,19 @@ var utopiaNft = artifacts.require("./UtopiaNFT.sol");
 
 module.exports = async function(deployer) {
 
-	// await deployer.deploy(Utopia42Controller, '0xF3cB8cb6170FA64Ea20DFe4D46762fb4d9BB23f4')
-	// await deployer.deploy(Utopia42VerseFactory, '0x693aA12240576Ff74169b25Cf1D4CcE15f2135Cd');
-	await deployer.deploy(collectionFactory, '0x4aee2ECcd5dd9CeE23b98B24a3CaA68bb5f092f2');
-	// await deployer.deploy(Utopia42Verse, "0x06c0313ea7E4F02d5A3077b292F104AECfBD5404");
-	// await deployer.deploy(utopiaNft, "0x006ab595524d8E6e73fE8dE52686c43e16A7799e", "0x06c0313ea7E4F02d5A3077b292F104AECfBD5404");
+    // await deployer.deploy(Utopia42Controller, '0xF3cB8cb6170FA64Ea20DFe4D46762fb4d9BB23f4')
+    await deployer.deploy(Utopia42VerseFactory, '0x693aA12240576Ff74169b25Cf1D4CcE15f2135Cd');
+    // await deployer.deploy(collectionFactory, '0x4aee2ECcd5dd9CeE23b98B24a3CaA68bb5f092f2');
+    // await deployer.deploy(Utopia42Verse,
+    // 	"0x06c0313ea7E4F02d5A3077b292F104AECfBD5404",
+    // 	"0x693aA12240576Ff74169b25Cf1D4CcE15f2135Cd",
+    // 	true,
+    // 	"Test"
+    // );
+    // await deployer.deploy(
+    //   utopiaNft,
+    //   "0x458fb21098F9fcb9bf9C02072235704B563D565F",
+    //   "0x693aA12240576Ff74169b25Cf1D4CcE15f2135Cd",
+    //   "Test"
+    // );
 }
