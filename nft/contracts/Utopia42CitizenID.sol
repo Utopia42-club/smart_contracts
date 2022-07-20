@@ -121,10 +121,8 @@ contract Utopia42CitizenID is MRC721{
         uint256 tokenId
     ) internal override {
         require(
-            (
-                !params[tokenId].isVerified &&
-                brightIDAddrs[to] != tokenId
-            ) ||
+            !params[tokenId].isVerified ||
+            brightIDAddrs[to] != tokenId ||
             citizenIDTransferWhitelist[to],
             'Not transferable'
         );
