@@ -92,8 +92,8 @@ contract Utopia42Verse is AccessControl{
         bool _publicAssignEnabled,
         string memory _verseName
         ){
-        _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
-        _setupRole(UTOPIA42DAO_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
+        _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(_controller).DAOWallet());
+        _setupRole(UTOPIA42DAO_ROLE, Utopia42Controller(_controller).DAOWallet());
         _setupRole(VERSE_ADMIN_ROLE, _owner);
         publicAssignEnabled = _publicAssignEnabled;
         controllerAddress = _controller;

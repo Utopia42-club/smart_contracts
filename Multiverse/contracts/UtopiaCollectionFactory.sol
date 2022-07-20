@@ -10,7 +10,6 @@ contract UtopiaCollectionFactory is AccessControl{
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 constant public UTOPIA_FACTORY_ROLE = keccak256("UTOPIA_FACTORY_ROLE");
     address public utopia42VerseFactoryAddress;
-    address public controllerAddress;
 
     event CollectionCreated(address owner, address creator, uint256 time, address verseAddress, address collectionAddress);
 
