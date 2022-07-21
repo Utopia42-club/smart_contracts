@@ -11,15 +11,18 @@ contract Utopia42Controller is AccessControl{
     mapping(address => uint256) versesTransferLandFees;
 
     address public DAOWallet;
+    address public DAOFundsWallet;
     uint256 public defaultUnitLandPrice = .0001 ether;
     uint256 public defaultTransferLandFee = .00001 ether;
     uint256 public landToNFTMinDelay;
     string public baseTokenURI = "https://nft-api.utopia42.club/";
 
     constructor (
-        address _daoAddress
+        address _daoAddress,
+        address _daoFundsWallet
     ) {
         DAOWallet = _daoAddress;
+        DAOFundsWallet = _daoFundsWallet;
         _setupRole(DEFAULT_ADMIN_ROLE, _daoAddress);
         _setupRole(UTOPIA42DAO_ROLE, _daoAddress);
     }
@@ -30,7 +33,7 @@ contract Utopia42Controller is AccessControl{
     }
 
     function setDAOWallet(address _wallet) public onlyUtopia42DAO {
-        DAOWallet = payable(_wallet);
+        DAOWallet = _wallet;
     }
 
     function setUintLandPrice(uint256 _price) public onlyUtopia42DAO {
@@ -47,6 +50,10 @@ contract Utopia42Controller is AccessControl{
 
     function setBaseTokenUri(string calldata _uri) public onlyUtopia42DAO {
         baseTokenURI = _uri;
+    }
+
+    function setDAOFundsWallet(address _newWallet) public onlyUtopia42DAO {
+        DAOFundsWallet = _newWallet;
     }
 
     function setUnitLandPriceForVerse(address _verseAddress, uint256 _price) public onlyUtopia42DAO {

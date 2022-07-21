@@ -193,7 +193,7 @@ contract Utopia42Verse is AccessControl{
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
-        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
+        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
@@ -209,7 +209,7 @@ contract Utopia42Verse is AccessControl{
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
-        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
+        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
 
         assignLandInternal(x1, x2, y1, y2, forAddress, hash);
     }
@@ -231,7 +231,7 @@ contract Utopia42Verse is AccessControl{
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
 
-        payable(Utopia42Controller(controllerAddress).DAOWallet()).transfer(msg.value);
+        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
