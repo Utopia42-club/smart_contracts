@@ -1,31 +1,34 @@
 {
-  "name": "muon-bridge-contracts",
+  "name": "utopia-multiverse-contracts",
   "version": "1.0.0",
-  "description": "muon bridge contracts",
+  "description": "utopia multiverse contracts",
   "main": "truffle-config.js",
   "scripts": {
     "compile": "truffle compile",
     "build": "truffle build",
-    "deploy": "truffle deploy --network ropsten",
+    "deploy-all-mumbai": "truffle deploy --network mumbai && npm run verify-all-mumbai",
+    "verify-all-mumbai": "truffle run verify Utopia42Controller Utopia42VerseFactory UtopiaCollectionFactory Utopia42Verse UtopiaNFT --network mumbai",
+    "deploy-all-rinkeby": "truffle deploy --network rinkeby && npm run verify-all-rinkeby",
+    "verify-all-rinkeby": "truffle run verify Utopia42Controller Utopia42VerseFactory UtopiaCollectionFactory Utopia42Verse UtopiaNFT --network rinkeby",
     "deploy-dev": "truffle deploy --network development",
     "test": "truffle test --network development"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/muon-protocol/muon-bridge-contracts"
+    "url": "git+https://github.com/Utopia42-club/smart_contracts"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/muon-protocol/muon-bridge-contracts/issuess"
+    "url": "https://github.com/Utopia42-club/smart_contracts/issues"
   },
-  "homepage": "https://github.com/muon-protocol/muon-bridge-contracts#readme",
+  "homepage": "https://github.com/Utopia42-club/smart_contracts#readme",
   "dependencies": {
     "@openzeppelin/contracts": "^4.1.0",
     "@truffle/hdwallet-provider": "^1.4.0",
     "app-module-path": "^2.2.0",
     "axios": "^0.21.1",
-    "dotenv": "^8.2.0",
+    "dotenv": "^8.6.0",
     "mocha": "^8.3.0",
     "object-assign": "^4.1.1",
     "object.assign": "^4.1.2",
