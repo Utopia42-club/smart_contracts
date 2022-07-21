@@ -62,9 +62,15 @@ contract UtopiaNFT is MRC721, Ownable{
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
+        uint256 chainID;
+        assembly {
+            chainID := chainid()
+        }
         return string(abi.encodePacked(
                 Utopia42Controller(controllerAddress).baseTokenURI(),
-                Strings.toHexString(uint160(address(this)), 20),
+                Strings.toString(chainID),
+                "/",
+                Strings.toHexString(uint160(verseContract), 20),
                 "/"
             )
         );
