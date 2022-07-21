@@ -17,6 +17,9 @@ contract Utopia42Controller is AccessControl{
     uint256 public landToNFTMinDelay;
     string public baseTokenURI = "https://nft-api.utopia42.club/";
 
+    event UnitLandPriceSet(address verseAddress, uint256 price);
+    event TransferLandFeeSet(address verseAddress, uint256 fee);
+
     constructor (
         address _daoAddress,
         address _daoFundsWallet
@@ -58,10 +61,12 @@ contract Utopia42Controller is AccessControl{
 
     function setUnitLandPriceForVerse(address _verseAddress, uint256 _price) public onlyUtopia42DAO {
         versesUnitLandsPrice[_verseAddress] = _price;
+        emit UnitLandPriceSet(_verseAddress, _price);
     }
 
-    function setTransferLandFeeForVerse(address _verseAddress, uint256 _price) public onlyUtopia42DAO {
-        versesTransferLandFees[_verseAddress] = _price;
+    function setTransferLandFeeForVerse(address _verseAddress, uint256 _fee) public onlyUtopia42DAO {
+        versesTransferLandFees[_verseAddress] = _fee;
+        emit TransferLandFeeSet(_verseAddress, _fee);
     }
 
     function unitLandPrice(address _verseAddress) public view returns(uint256 _unitLandPrice) {

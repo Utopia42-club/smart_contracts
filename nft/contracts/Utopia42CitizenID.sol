@@ -21,6 +21,9 @@ contract Utopia42CitizenID is MRC721{
     mapping(address => uint256) public brightIDAddrs;
     mapping(address => bool) public citizenIDTransferWhitelist;
 
+    event BrightIDSet(uint256 nftId, address caller, address[] addrs);
+    event CitizenIDTransferWhUpdated(address user, bool isAdded);
+
     modifier onlyAdmin {
         require(hasRole(ADMIN_ROLE, msg.sender), "!Only Admin");
         _;
@@ -101,6 +104,7 @@ contract Utopia42CitizenID is MRC721{
             brightIDAddrs[addrs[i]] = _nftId;
         }
 
+        emit BrightIDSet(_nftId, msg.sender, addrs);
         return true;
     }
 
@@ -159,6 +163,7 @@ contract Utopia42CitizenID is MRC721{
 
     function setCitizenIDTransferWhitelist(address _user, bool _inWhitelist) public onlyAdmin {
         citizenIDTransferWhitelist[_user] = _inWhitelist;
+        emit CitizenIDTransferWhUpdated(_user, _inWhitelist);
     }
 
 }

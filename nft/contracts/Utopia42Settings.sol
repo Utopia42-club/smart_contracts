@@ -13,6 +13,8 @@ contract Utopia42Settings is AccessControl {
 
     address public utopia42CitizenIDContract;
 
+    event SettingUpdated(address user, uint256 tokenId, string[] keys, string[] values);
+
     modifier onlyAdmin {
         require(hasRole(ADMIN_ROLE, msg.sender), "Utopia42Settings: !Admin");
         _;
@@ -38,6 +40,7 @@ contract Utopia42Settings is AccessControl {
         for (uint i = 0; i < keys.length; i++) {
             settings[_tokenId][keys[i]] = values[i];
         }
+        emit SettingUpdated(msg.sender, _tokenId, keys, values);
     }
 
     function userInfo(address _user, string[] memory _items) view public returns(string[] memory ) {
