@@ -174,7 +174,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.PK,
-          'https://matic-mumbai.chainstacklabs.com'
+          'https://polygontestapi.terminet.io/rpc'
         ),
       network_id: 80001,
       confirmations: 2,
