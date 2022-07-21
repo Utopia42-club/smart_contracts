@@ -115,6 +115,30 @@ contract Utopia42CitizenID is MRC721{
         return 0;
     }
 
+    function getCitizenInfoByID(uint256 id) public view returns(
+        uint256 citizenId,
+        bool isVerified,
+        uint256 mintTime,
+        uint256 verifyTime
+    ){
+        citizenId = id;
+        isVerified = params[id].isVerified;
+        mintTime = params[id].mintTime;
+        verifyTime = params[id].verifyTime;
+    }
+
+    function getCitizenInfo(address _user) public view returns(
+        uint256 citizenId,
+        bool isVerified,
+        uint256 mintTime,
+        uint256 verifyTime
+    ){
+        citizenId = getCitizenID(_user);
+        isVerified = params[citizenId].isVerified;
+        mintTime = params[citizenId].mintTime;
+        verifyTime = params[citizenId].verifyTime;
+    }
+
     function _beforeTokenTransfer(
         address from,
         address to,
