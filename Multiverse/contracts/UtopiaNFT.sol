@@ -6,7 +6,7 @@ import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface IUtopiaVerse42{
+interface IUtopia42Verse{
     function transferNFTLand(uint256 tokenId, address to) external;
 }
 
@@ -49,7 +49,7 @@ contract UtopiaNFT is MRC721, Ownable{
 
         if (from != address(0) && to != address(0)) {
             // transfer land ownership on Utopia
-            IUtopiaVerse42(verseContract).transferNFTLand(tokenId, to);
+            IUtopia42Verse(verseContract).transferNFTLand(tokenId, to);
         }
     }
 
