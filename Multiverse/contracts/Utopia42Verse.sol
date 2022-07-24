@@ -68,13 +68,13 @@ contract Utopia42Verse is AccessControl{
     }
 
     modifier onlyUtopia42DAO {
-        require(hasRole(UTOPIA42DAO_ROLE, msg.sender), "!Utopia42DAO");
+        require(msg.sender == Utopia42Controller(controllerAddress).DAOWallet(), "!Utopia42DAO");
         _;
     }
 
     modifier onlyUtopia42DAOOrVerseFactory {
         require(
-            hasRole(UTOPIA42DAO_ROLE, msg.sender) ||
+            msg.sender == Utopia42Controller(controllerAddress).DAOWallet() ||
             hasRole(VERSE_FACTORY_ROLE, msg.sender),
             "!Utopia42DAO Or Verse Factory");
         _;

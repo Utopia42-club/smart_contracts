@@ -18,7 +18,7 @@ contract UtopiaNFT is MRC721, Ownable{
     bytes32 constant public Utopia42DAO_ROLE = keccak256("Utopia42DAO_ROLE");
 
     modifier onlyUtopia42DAO(){
-        require(hasRole(Utopia42DAO_ROLE, msg.sender), "!Utopia42DAO");
+        require(msg.sender == Utopia42Controller(controllerAddress).DAOWallet(), "!Utopia42DAO");
         _;
     }
 
