@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 
-interface IUtopiaCollectionFactory {
+interface IUtopia42CollectionFactory {
     function createCollection (
         address _owner,
         address _verse,

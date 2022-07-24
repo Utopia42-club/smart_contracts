@@ -2,7 +2,7 @@ var Utopia42Controller = artifacts.require("./Utopia42Controller.sol");
 var Utopia42VerseFactory = artifacts.require("./Utopia42VerseFactory.sol");
 var collectionFactory = artifacts.require("./UtopiaCollectionFactory.sol");
 var Utopia42Verse = artifacts.require("./Utopia42Verse.sol");
-var utopiaNft = artifacts.require("./UtopiaNFT.sol");
+var Utopia42VerseLands = artifacts.require("./Utopia42VerseLands.sol");
 require('dotenv').config()
 
 module.exports = async function(deployer) {
@@ -18,7 +18,7 @@ module.exports = async function(deployer) {
     	"Test"
     );
     await deployer.deploy(
-      utopiaNft,
+      Utopia42VerseLands,
       Utopia42Verse.address,
       Utopia42Controller.address,
       "Test"

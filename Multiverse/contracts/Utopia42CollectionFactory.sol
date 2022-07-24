@@ -2,10 +2,10 @@
 pragma solidity ^0.8.10;
 
 
-import "./UtopiaNFT.sol";
+import "./Utopia42VerseLands.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract UtopiaCollectionFactory is AccessControl{
+contract Utopia42CollectionFactory is AccessControl{
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 constant public UTOPIA_FACTORY_ROLE = keccak256("UTOPIA_FACTORY_ROLE");
@@ -43,7 +43,7 @@ contract UtopiaCollectionFactory is AccessControl{
         address collection
     ){
 
-        collection = address(new UtopiaNFT(
+        collection = address(new Utopia42VerseLands(
             _verse,
             _controller,
             _verseName

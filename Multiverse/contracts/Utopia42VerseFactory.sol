@@ -2,7 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "./Utopia42Verse.sol";
-import "./IUtopiaCollectionFactory.sol";
+import "./IUtopia42CollectionFactory.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
@@ -49,7 +49,7 @@ contract Utopia42VerseFactory is AccessControl {
             publicAssignEnabled,
             verseName
         ));
-        address collection = IUtopiaCollectionFactory(collectionFactory).createCollection(
+        address collection = IUtopia42CollectionFactory(collectionFactory).createCollection(
             _owner, verse, msg.sender, controllerAddress, verseName
         );
         Utopia42Verse(verse).adminSetNFTContract(collection);

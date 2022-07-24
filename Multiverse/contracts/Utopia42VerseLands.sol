@@ -11,7 +11,7 @@ interface IUtopia42Verse{
 }
 
 
-contract UtopiaNFT is MRC721, Ownable{
+contract Utopia42VerseLands is MRC721, Ownable{
 
     address public verseContract;
     address public controllerAddress;
