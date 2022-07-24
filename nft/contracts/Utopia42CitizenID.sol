@@ -166,4 +166,8 @@ contract Utopia42CitizenID is MRC721{
         emit CitizenIDTransferWhUpdated(_user, _inWhitelist);
     }
 
+    function setAppName(bytes32 appName) public onlyAdmin {
+        app = appName;
+    }
+
 }
