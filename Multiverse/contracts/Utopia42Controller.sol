@@ -22,13 +22,15 @@ contract Utopia42Controller is AccessControl{
     event TransferLandFeeSet(address verseAddress, uint256 fee);
 
     constructor (
-        address _daoAddress,
-        address _daoFundsWallet
+        address _daoWallet,
+        address _daoFundsWallet,
+        address _verseNFTOwner
     ) {
-        DAOWallet = _daoAddress;
+        DAOWallet = _daoWallet;
         DAOFundsWallet = _daoFundsWallet;
-        _setupRole(DEFAULT_ADMIN_ROLE, _daoAddress);
-        _setupRole(UTOPIA42DAO_ROLE, _daoAddress);
+        verseNFTOwner = _verseNFTOwner;
+        _setupRole(DEFAULT_ADMIN_ROLE, _daoWallet);
+        _setupRole(UTOPIA42DAO_ROLE, _daoWallet);
     }
 
     modifier onlyUtopia42DAO {
