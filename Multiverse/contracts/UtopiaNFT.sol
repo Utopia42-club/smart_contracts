@@ -34,7 +34,7 @@ contract UtopiaNFT is MRC721, Ownable{
         controllerAddress = _controller;
         _setupRole(DEFAULT_ADMIN_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
         _setupRole(Utopia42DAO_ROLE, Utopia42Controller(controllerAddress).DAOWallet());
-        transferOwnership(Utopia42Controller(controllerAddress).DAOWallet());
+        transferOwnership(Utopia42Controller(controllerAddress).verseNFTOwner());
     	_setupRole(MINTER_ROLE, _verseAddress);
     	_setupRole(BURNER_ROLE, _verseAddress);
         verseContract = _verseAddress;

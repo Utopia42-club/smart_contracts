@@ -11,6 +11,7 @@ contract Utopia42Controller is AccessControl{
     mapping(address => uint256) versesTransferLandFees;
 
     address public DAOWallet;
+    address public verseNFTOwner;
     address public DAOFundsWallet;
     uint256 public defaultUnitLandPrice = .0001 ether;
     uint256 public defaultTransferLandFee = .00001 ether;
