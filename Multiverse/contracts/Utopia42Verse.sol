@@ -285,6 +285,7 @@ contract Utopia42Verse is AccessControl{
 
     function adminSetNFTContract(address addr) public onlyUtopia42DAOOrVerseFactory {
         nftContract = addr;
+        _setupRole(NFT_ROLE, addr);
     }
 
     function adminEnableWithoutSig(bool val) public onlyUtopia42DAO{

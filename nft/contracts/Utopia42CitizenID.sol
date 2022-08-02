@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./MRC721.sol";
-import "./MRC721Metadata.sol";
 
 contract Utopia42CitizenID is MRC721{
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN ROLE");
