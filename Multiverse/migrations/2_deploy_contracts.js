@@ -17,7 +17,7 @@ module.exports = async function(deployer) {
     let Utopia42VerseFactory_ = await Utopia42VerseFactory.deployed()
     await Utopia42VerseFactory_.setCollectionFactoryAddress(collectionFactory.address)
     await deployer.deploy(Utopia42Verse,
-    	process.env.VERSE_OWNER,
+    	process.env.VERSE_NFT_OWNER,
     	Utopia42Controller.address,
     	true,
     	"Test"

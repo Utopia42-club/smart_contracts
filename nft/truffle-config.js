@@ -174,7 +174,7 @@ module.exports = {
       provider: () =>
         new HDWalletProvider(
           process.env.PK,
-          'https://polygontestapi.terminet.io/rpc'
+          'https://rpc.ankr.com/polygon_mumbai'
         ),
       network_id: 80001,
       confirmations: 2,
