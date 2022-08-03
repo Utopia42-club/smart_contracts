@@ -21,19 +21,19 @@ module.exports = async function(deployer) {
     await deployer.deploy(collectionFactory, Utopia42VerseFactory.address);
     let Utopia42VerseFactory_ = await Utopia42VerseFactory.deployed()
     await Utopia42VerseFactory_.setCollectionFactoryAddress(collectionFactory.address)
-    await deployer.deploy(Utopia42Verse,
-    	process.env.VERSE_NFT_OWNER,
-    	Utopia42Controller.address,
-    	true,
-    	"Test"
-    );
-    await deployer.deploy(
-      Utopia42VerseLands,
-      Utopia42Verse.address,
-      Utopia42Controller.address,
-      "Test"
-    );
 
+    // await deployer.deploy(Utopia42Verse,
+    // 	process.env.VERSE_NFT_OWNER,
+    // 	Utopia42Controller.address,
+    // 	true,
+    // 	"Test"
+    // );
+    // await deployer.deploy(
+    //   Utopia42VerseLands,
+    //   Utopia42Verse.address,
+    //   Utopia42Controller.address,
+    //   "Test"
+    // );
 
     await deployer.deploy(Utopia42CitizenID, process.env.BRIGHTID_SIGNER, process.env.APP_NAME);
     await deployer.deploy(Utopia42CitizenIDMinter, Utopia42CitizenID.address);

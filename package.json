@@ -5,7 +5,9 @@
   "main": "truffle-config.js",
   "scripts": {
     "compile": "truffle compile",
-    "build": "truffle build"
+    "build": "truffle build",
+    "deploy-mumbai": "truffle deploy --network mumbai",
+    "verify-mumbai": "truffle run verify Utopia42Controller Utopia42VerseFactory Utopia42CollectionFactory Utopia42CitizenID Utopia42CitizenIDMinter Utopia42Settings --network mumbai"
   },
   "repository": {
     "type": "git",
