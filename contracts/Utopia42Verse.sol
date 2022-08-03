@@ -123,6 +123,7 @@ contract Utopia42Verse is AccessControl{
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
         require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(address(this)), 'Utopia42Verse: insufficient fee');
+        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
         transferLandInternal(landId, _to, msg.sender);
     }
 
