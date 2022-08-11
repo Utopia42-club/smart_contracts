@@ -228,7 +228,7 @@ contract Utopia42Verse is AccessControl{
         sigHash = sigHash.toEthSignedMessageHash();
         address signer = sigHash.recover(sig);
         require(hasRole(CONFLICT_FREE_ROLE, signer) ||
-                Utopia42Controller(controllerAddress).conflictResolverWallet(signer),
+                Utopia42Controller(controllerAddress).conflictResolverWallets(signer),
                 "!sig"
                );
 
