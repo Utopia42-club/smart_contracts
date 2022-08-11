@@ -9,6 +9,7 @@ contract Utopia42Controller is AccessControl{
 
     mapping(address => uint256) versesUnitLandsPrice;
     mapping(address => uint256) versesTransferLandFees;
+    mapping(address => bool) public conflictResolverWallets;
 
     address public DAOWallet;
     address public verseNFTOwner;
@@ -60,6 +61,10 @@ contract Utopia42Controller is AccessControl{
 
     function setDAOFundsWallet(address _newWallet) public onlyUtopia42DAO {
         DAOFundsWallet = _newWallet;
+    }
+
+    function setConflictResolverWallets(address _wallet, bool active) public onlyUtopia42DAO {
+        conflictResolverWallets[_wallet] = active;
     }
 
     function setUnitLandPriceForVerse(address _verseAddress, uint256 _price) public onlyUtopia42DAO {

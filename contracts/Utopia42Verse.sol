@@ -203,7 +203,9 @@ contract Utopia42Verse is AccessControl{
         int256 x2, int256 y1, int256 y2, string memory hash,
         uint lastLandChecked, address forAddress) public payable{
 
-        require(hasRole(CONFLICT_FREE_ROLE, forAddress), "!sig");
+        require(hasRole(CONFLICT_FREE_ROLE, forAddress) ||
+                Utopia42Controller(controllerAddress).conflictResolverWallets(forAddress),
+                "!sig");
 
         require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
 
@@ -225,7 +227,10 @@ contract Utopia42Verse is AccessControl{
         ));
         sigHash = sigHash.toEthSignedMessageHash();
         address signer = sigHash.recover(sig);
-        require(hasRole(CONFLICT_FREE_ROLE, signer), "!sig");
+        require(hasRole(CONFLICT_FREE_ROLE, signer) ||
+                Utopia42Controller(controllerAddress).conflictResolverWallet(signer),
+                "!sig"
+               );
 
         require(!hasConflict(x1, x1, y1, y2, lastLandChecked), "conflict");
 
