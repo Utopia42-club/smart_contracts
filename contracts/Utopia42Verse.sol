@@ -60,6 +60,8 @@ contract Utopia42Verse is AccessControl{
         int256 x2, int256 y1, int256 y2, address owner, string hash);
     event LandUpdate(uint256 landId, string hash);
     event LandTransfer(uint256 landId, address from, address to);
+    event NFTToLandSet(uint256 landId);
+    event LandToNFTSet(uint256 landId);
 
 
     modifier verseAdminRole {
@@ -123,7 +125,9 @@ contract Utopia42Verse is AccessControl{
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
         require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(address(this)), 'Utopia42Verse: insufficient fee');
-        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        if (msg.value > 0) {
+            payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        }
         transferLandInternal(landId, _to, msg.sender);
     }
 
@@ -271,6 +275,7 @@ contract Utopia42Verse is AccessControl{
 
         lands[landId].isNFT = true;
         IUtpoiaNFT(nftContract).mint(msg.sender, landId);
+        emit LandToNFTSet(landId);
     }
 
     function NFTToLand(uint256 landId) public{
@@ -279,6 +284,7 @@ contract Utopia42Verse is AccessControl{
 
         lands[landId].isNFT = false;
         IUtpoiaNFT(nftContract).burn(landId);
+        emit NFTToLandSet(landId);
     }
 
     function adminSetIsPublic(bool val) verseAdminRole public{
