@@ -26,7 +26,10 @@ contract MRC721 is ERC721Enumerable, AccessControl{
     }
 
     function burn(uint256 tokenId) public{
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "caller is not owner nor approved");
+        require(_isApprovedOrOwner(_msgSender(), tokenId) ||
+                hasRole(BURNER_ROLE, _msgSender()),
+                "MRC721: caller is not owner nor approved or verse"
+               );
         _burn(tokenId);
     }
 
