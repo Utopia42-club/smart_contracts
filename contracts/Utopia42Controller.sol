@@ -10,6 +10,7 @@ contract Utopia42Controller is AccessControl{
     mapping(address => uint256) versesUnitLandsPrice;
     mapping(address => uint256) versesTransferLandFees;
     mapping(address => bool) public versesTransferLandFreeFee;
+    mapping(address => bool) public versesFreeLand;
     mapping(address => bool) public conflictResolverWallets;
 
     address public DAOWallet;
@@ -24,6 +25,7 @@ contract Utopia42Controller is AccessControl{
     event TransferLandFeeSet(address verseAddress, uint256 fee);
     event TransferLandFreeFeeSet(address verseAddress, bool free);
     event ConflictResolverSet(address wallet, bool active);
+    event VerseFreeLandSet(address wallet, bool active);
 
     constructor (
         address _daoWallet,
@@ -86,7 +88,15 @@ contract Utopia42Controller is AccessControl{
         emit TransferLandFreeFeeSet(_verseAddress, _free);
     }
 
+    function setVersesFreeLand(address _verseAddress, bool _free) public onlyUtopia42DAO {
+        versesFreeLand[_verseAddress] = _free;
+        emit VerseFreeLandSet(_verseAddress, _free);
+    }
+
     function unitLandPrice(address _verseAddress) public view returns(uint256 _unitLandPrice) {
+        if (versesFreeLand[_verseAddress]) {
+            return _unitLandPrice;
+        }
         _unitLandPrice = versesUnitLandsPrice[_verseAddress] == 0 ?
                          defaultUnitLandPrice :
                          versesUnitLandsPrice[_verseAddress];

@@ -124,6 +124,7 @@ contract Utopia42Verse is AccessControl{
 
     function transferLand(uint256 landId, address _to) public payable {
         require(lands[landId].owner == msg.sender, "!owner");
+        require(!lands[landId].isNFT, "!isNFT");
         require(msg.value >= Utopia42Controller(controllerAddress).transferLandFee(address(this)), 'Utopia42Verse: insufficient fee');
         if (msg.value > 0) {
             payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
@@ -197,8 +198,9 @@ contract Utopia42Verse is AccessControl{
         require(assignLandWithoutSigEnabled, "requires sig");
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
-
-        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        if (msg.value > 0) {
+            payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        }
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
@@ -215,8 +217,9 @@ contract Utopia42Verse is AccessControl{
 
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
-
-        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        if(msg.value > 0) {
+            payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        }
 
         assignLandInternal(x1, x2, y1, y2, forAddress, hash);
     }
@@ -240,8 +243,9 @@ contract Utopia42Verse is AccessControl{
 
         uint256 cost = abs(x2-x1) * abs(y2-y1) * Utopia42Controller(controllerAddress).unitLandPrice(address(this));
         require(msg.value >= cost, "value < price");
-
-        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        if (msg.value > 0) {
+            payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
+        }
 
         assignLandInternal(x1, x2, y1, y2, msg.sender, hash);
     }
