@@ -53,6 +53,10 @@ contract Utopia42Settings is AccessControl {
         return _settings;
     }
 
+    function setUtopia42CitizenIDContract(address _newAddress) public onlyAdmin {
+        utopia42CitizenIDContract = _newAddress;
+    }
+
     function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyAdmin {
         require(_to != address(0));
         if(_tokenAddr == address(0)){

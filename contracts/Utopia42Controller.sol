@@ -49,6 +49,10 @@ contract Utopia42Controller is AccessControl{
         DAOWallet = _wallet;
     }
 
+    function setVerseNFTOwner(address _wallet) public onlyUtopia42DAO {
+        verseNFTOwner = _wallet;
+    }
+
     function setUintLandPrice(uint256 _price) public onlyUtopia42DAO {
         defaultUnitLandPrice = _price;
     }
