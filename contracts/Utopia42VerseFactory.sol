@@ -42,6 +42,7 @@ contract Utopia42VerseFactory is AccessControl {
             "not public yet"
         );
         require(msg.value >= verseCreationFee, 'Insufficient Value');
+        payable(Utopia42Controller(controllerAddress).DAOFundsWallet()).transfer(msg.value);
 
         verse = address(new Utopia42Verse(
             _owner,
