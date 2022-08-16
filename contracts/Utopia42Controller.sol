@@ -2,6 +2,7 @@
 pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Utopia42Controller is AccessControl{
 
@@ -109,6 +110,15 @@ contract Utopia42Controller is AccessControl{
         _transferLandPrice = versesTransferLandFees[_verseAddress] == 0 ?
                              defaultTransferLandFee :
                              versesTransferLandFees[_verseAddress];
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyUtopia42DAO {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 
 }

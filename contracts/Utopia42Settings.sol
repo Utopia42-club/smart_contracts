@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Utopia42CitizenID.sol";
 
 
@@ -50,5 +51,14 @@ contract Utopia42Settings is AccessControl {
             _settings[i] = settings[tokenId][_items[i]];
         }
         return _settings;
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyAdmin {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 }

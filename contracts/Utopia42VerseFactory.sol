@@ -3,6 +3,7 @@ pragma solidity ^0.8.10;
 
 import "./Utopia42Verse.sol";
 import "./interfaces/IUtopia42CollectionFactory.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
@@ -71,5 +72,14 @@ contract Utopia42VerseFactory is AccessControl {
 
     function setIsPublic(bool _isPublic) public onlyAdmin {
         isPublic = _isPublic;
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyAdmin {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 }

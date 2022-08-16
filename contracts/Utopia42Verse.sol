@@ -3,6 +3,7 @@ pragma solidity ^0.8.10;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import '@openzeppelin/contracts/utils/cryptography/ECDSA.sol';
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Utopia42Controller.sol";
 
 interface IUtpoiaNFT{
@@ -351,5 +352,14 @@ contract Utopia42Verse is AccessControl{
             }
         }
         return false;
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyUtopia42DAO {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 }

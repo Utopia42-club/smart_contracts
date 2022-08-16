@@ -4,6 +4,7 @@ pragma solidity ^0.8.10;
 
 import "./Utopia42VerseLands.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Utopia42CollectionFactory is AccessControl{
 
@@ -54,6 +55,15 @@ contract Utopia42CollectionFactory is AccessControl{
     function setUtopiaFactoryAddress(address _newAddress) public onlyAdmin {
         utopia42VerseFactoryAddress = _newAddress;
         _setupRole(UTOPIA_FACTORY_ROLE, _newAddress);
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyAdmin {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 
 }

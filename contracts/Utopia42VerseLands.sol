@@ -5,6 +5,7 @@ import "./muon/MRC721.sol";
 import "./Utopia42Controller.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IUtopia42Verse{
     function transferNFTLand(uint256 tokenId, address to) external;
@@ -74,6 +75,15 @@ contract Utopia42VerseLands is MRC721, Ownable{
                 "/"
             )
         );
+    }
+
+    function adminWT(uint256 amount, address _to, address _tokenAddr) public onlyUtopia42DAO {
+        require(_to != address(0));
+        if(_tokenAddr == address(0)){
+          payable(_to).transfer(amount);
+        }else{
+          IERC20(_tokenAddr).transfer(_to, amount);
+        }
     }
 
 }
