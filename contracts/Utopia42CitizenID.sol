@@ -167,4 +167,8 @@ contract Utopia42CitizenID is MRC721{
         app = appName;
     }
 
+    function setSigner(address _signer) public onlyAdmin {
+        signer = _signer;
+    }
+
 }
