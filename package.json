@@ -7,7 +7,9 @@
     "compile": "truffle compile",
     "build": "truffle build",
     "deploy-mumbai": "truffle deploy --network mumbai",
-    "verify-mumbai": "truffle run verify Utopia42Controller Utopia42VerseFactory Utopia42CollectionFactory Utopia42CitizenID Utopia42CitizenIDMinter Utopia42Settings --network mumbai"
+    "deploy-polygon": "truffle deploy --network polygon",
+    "verify-mumbai": "truffle run verify Utopia42Controller Utopia42VerseFactory Utopia42CollectionFactory Utopia42CitizenID Utopia42CitizenIDMinter Utopia42Settings --network mumbai",
+    "verify-polygon": "truffle run verify Utopia42Controller Utopia42VerseFactory Utopia42CollectionFactory Utopia42CitizenID Utopia42CitizenIDMinter Utopia42Settings --network polygon"
   },
   "repository": {
     "type": "git",
