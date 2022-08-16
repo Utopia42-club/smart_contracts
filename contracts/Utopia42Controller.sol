@@ -17,8 +17,8 @@ contract Utopia42Controller is AccessControl{
     address public DAOWallet;
     address public verseNFTOwner;
     address public DAOFundsWallet;
-    uint256 public defaultUnitLandPrice = .0001 ether;
-    uint256 public defaultTransferLandFee = .00001 ether;
+    uint256 public defaultUnitLandPrice = 1000000000000000;
+    uint256 public defaultTransferLandFee = 1 ether;
     uint256 public landToNFTMinDelay;
     string public baseTokenURI = "https://nft-api.utopia42.club/";
 

@@ -11,13 +11,13 @@ contract Utopia42CitizenIDMinter is Ownable {
   using ECDSA for bytes32;
 
 
-  uint256 public unitPrice = 0.001 ether; // 0.001 ether
+  uint256 public unitPrice = 5.5 ether;
   bool public mintEnabled = true;
   uint8 public maxPerUser = 20;
 
   IMRC721 public nftContract;
 
-  uint256 public maxCap = 3270;
+  uint256 public maxCap = 1000;
 
 
   constructor(

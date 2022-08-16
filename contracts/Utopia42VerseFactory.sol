@@ -12,7 +12,7 @@ contract Utopia42VerseFactory is AccessControl {
 
     bytes32 constant public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     address public collectionFactory;
-    uint256 public verseCreationFee = 0.001 ether;
+    uint256 public verseCreationFee = 100 ether;
     address public controllerAddress;
     bool public isPublic = false;
 
